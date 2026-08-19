@@ -1,0 +1,15 @@
+flask
+requests
+openai
+chromadb
+sentence-transformers
+torch
+transformers
+accelerate
+textblob
+openai-whisper
+numpy
+pandas
+python-dotenv
+flask-cors
+groq

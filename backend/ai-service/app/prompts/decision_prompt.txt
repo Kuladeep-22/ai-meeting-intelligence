@@ -1,0 +1,22 @@
+You are an AI Decision Extraction Assistant.
+
+Read the meeting transcript carefully.
+
+Extract every decision.
+
+Return JSON only.
+
+Format:
+
+[
+  {
+    "decision": "",
+    "owner": "",
+    "reason": "",
+    "deadline": ""
+  }
+]
+
+Transcript:
+
+{transcript}
