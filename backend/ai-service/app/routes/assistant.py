@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from app.services.rag_service import RAGService
-from app.services.groq_service import GroqService
+from app.services.groq_service import generate_answer
 
 
 assistant_bp = Blueprint(
@@ -10,86 +9,56 @@ assistant_bp = Blueprint(
 )
 
 
-@assistant_bp.route("/chat", methods=["POST"])
-def chat():
-
+def handle_chat():
     try:
-        data = request.get_json(silent=True)
 
-        print("CHAT REQUEST:", data)
+        data = request.get_json(silent=True) or {}
 
-        if not data:
-            return jsonify({
-                "success": False,
-                "message": "Request body is required"
-            }), 400
+        question = str(
+            data.get("question", "")
+        ).strip()
 
-        question = data.get("question", "").strip()
+        context = str(
+            data.get("context", "")
+        )
 
         if not question:
+
             return jsonify({
-                "success": False,
-                "message": "Question is required"
+                "error": "question is required"
             }), 400
 
-        print("USER QUESTION:", question)
-
-        # ---------------------------------------
-        # Search relevant meeting information
-        # ---------------------------------------
-
-        rag_result = RAGService.search(
-            question=question,
-            top_k=5
-        )
-
-        documents = rag_result.get(
-            "results",
-            []
-        )
-
-        print("RAG DOCUMENTS:", documents)
-
-        # ---------------------------------------
-        # Build context
-        # ---------------------------------------
-
-        context = ""
-
-        if documents:
-            context = "\n\n".join(
-                documents
-            )
-
-        print("CONTEXT:", context)
-
-        # ---------------------------------------
-        # Send actual question to Groq
-        # ---------------------------------------
-
-        answer = GroqService.generate(
+        answer = generate_answer(
             question=question,
             context=context
         )
 
-        print("AI ANSWER:", answer)
-
         return jsonify({
-            "success": True,
-            "question": question,
-            "answer": answer,
-            "sources": documents
-        })
+            "answer": answer
+        }), 200
 
     except Exception as e:
 
-        print(
-            "AI ASSISTANT ERROR:",
-            str(e)
-        )
+        print("========== CHAT ERROR ==========")
+        print(type(e).__name__, str(e))
+        print("================================")
 
         return jsonify({
-            "success": False,
-            "message": "AI Assistant failed",
             "error": str(e)
         }), 500
+
+
+# Support BOTH URLs.
+#
+# This removes the URL mismatch that has been causing
+# your 404 errors.
+
+assistant_bp.route(
+    "/api/v1/chat",
+    methods=["POST"]
+)(handle_chat)
+
+assistant_bp.route(
+    "/chat",
+    methods=["POST"]
+)(handle_chat)

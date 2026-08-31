@@ -1,17 +1,22 @@
 import { useState, MouseEvent } from "react";
-
 import {
-  AppBar,
-  Toolbar,
+  Paper,
   Typography,
-  IconButton,
-  Avatar,
-  Box,
-  Badge,
-  Menu,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
   MenuItem,
   ListItemIcon,
+  Avatar,
+  IconButton,
+  Menu,
+  Badge,
+  AppBar,
+  Toolbar,
+  Box,
 } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -86,6 +91,12 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             transformOrigin={{ vertical: "top", horizontal: "right" }}
           >
+            <MenuItem onClick={handleMenuClose}>
+              <ListItemIcon>
+                <AccountCircleIcon fontSize="small" />
+              </ListItemIcon>
+              Profile
+            </MenuItem>
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>
                 <LogoutIcon fontSize="small" />

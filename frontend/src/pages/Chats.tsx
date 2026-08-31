@@ -6,11 +6,12 @@ import ConversationList from "../components/chat/ConversationList";
 import type { ChatContact, ChatMessageItem } from "../types/chat";
 
 const contacts: ChatContact[] = [
-  { id: "1", name: "Rahul Sharma", role: "Product Manager", online: true, phone: "+91-9876543210" },
-  { id: "2", name: "Anjali Verma", role: "Backend Developer", online: true, phone: "+91-9876501234" },
-  { id: "3", name: "Kiran Rao", role: "UX Designer", online: true, phone: "+91-9811112233" },
-  { id: "4", name: "Suresh Iyer", role: "QA Engineer", online: false, phone: "+91-9822223344" },
-  { id: "5", name: "Priya Nair", role: "Data Scientist", online: false, phone: "+91-9833334455" },
+  { id: "1", name: "Madhuri", role: "Product Manager", online: true, phone: "+91-9876543210" },
+  { id: "2", name: "Kuladeep", role: "Backend Developer", online: true, phone: "+91-9876501234" },
+  { id: "3", name: "Deepak", role: "UX Designer", online: true, phone: "+91-9811112233" },
+  { id: "4", name: "Mastan", role: "QA Engineer", online: false, phone: "+91-9822223344" },
+  { id: "5", name: "Vinay", role: "Data Scientist", online: false, phone: "+91-9833334455" },
+  { id: "6", name: "Ramesh", role: "DevOps Engineer", online: false, phone: "+91-9844445566" },
 ];
 
 const initialMessages: ChatMessageItem[] = [
@@ -62,6 +63,13 @@ const initialMessages: ChatMessageItem[] = [
     sender: "them",
     text: "The data pipeline is running smoothly after the last update.",
     timestamp: Date.now() - 1000 * 60 * 10,
+  },
+  {
+    id: "m8",
+    contactId: "6",
+    sender: "them",
+    text: "The server deployment is scheduled for tomorrow.",
+    timestamp: Date.now() - 1000 * 60 * 5,
   }
 ];
 

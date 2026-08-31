@@ -17,9 +17,6 @@ export interface TimelineEvent {
 
 const TIMELINE_STAGES: { label: string; ratio: number }[] = [
   { label: "Meeting Started", ratio: 0 },
-  { label: "Requirements Discussion", ratio: 0.15 },
-  { label: "Decision Taken", ratio: 0.5 },
-  { label: "Action Items Assigned", ratio: 0.8 },
   { label: "Meeting Ended", ratio: 1 },
 ];
 

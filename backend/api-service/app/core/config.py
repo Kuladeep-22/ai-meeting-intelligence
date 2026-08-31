@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     FLASK_AI_URL: str = (
-        "http://localhost:8001"
+        "http://localhost:5000"
     )
 
     class Config:

@@ -4,6 +4,7 @@ from fastapi import (
     HTTPException,
     status,
 )
+from pydantic import BaseModel
 
 from sqlalchemy.orm import Session
 
@@ -26,8 +27,14 @@ from app.api.auth.dependencies import (
 )
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+)
 
+class ChatRequest(BaseModel):
+    question: str
+    context: str = ""
 
 # ==================================================
 # REGISTER
@@ -46,11 +53,12 @@ def register(
             full_name=data.full_name,
             email=str(data.email),
             password=data.password,
+            role=data.role.value,
         )
 
         return {
             "success": True,
-            "message": "Registration successful",
+            "message": "Registration successfully",
             "user": {
                 "id": user.id,
                 "full_name": user.full_name,

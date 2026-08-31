@@ -1,13 +1,18 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
 from app.models.risk import Risk
 
 
-def get_all_risks(db):
-    return db.query(Risk).all()
+def get_all_risks(db: Session):
+    return (
+        db.query(Risk)
+        .order_by(Risk.id.desc())
+        .all()
+    )
 
 
-def get_risk(db, risk_id: int):
+def get_risk(db: Session, risk_id: int):
 
     risk = (
         db.query(Risk)
@@ -24,14 +29,13 @@ def get_risk(db, risk_id: int):
     return risk
 
 
-def create_risk(db, data):
+def create_risk(db: Session, data):
 
     risk = Risk(
         meeting_id=data.meeting_id,
         title=data.title,
         description=data.description,
         severity=data.severity,
-        owner=data.owner,
         status=data.status,
     )
 
@@ -42,7 +46,11 @@ def create_risk(db, data):
     return risk
 
 
-def update_risk(db, risk_id, data):
+def update_risk(
+    db: Session,
+    risk_id: int,
+    data
+):
 
     risk = (
         db.query(Risk)
@@ -56,19 +64,16 @@ def update_risk(db, risk_id, data):
             detail="Risk not found"
         )
 
-    if data.title:
+    if data.title is not None:
         risk.title = data.title
 
-    if data.description:
+    if data.description is not None:
         risk.description = data.description
 
-    if data.severity:
+    if data.severity is not None:
         risk.severity = data.severity
 
-    if data.owner:
-        risk.owner = data.owner
-
-    if data.status:
+    if data.status is not None:
         risk.status = data.status
 
     db.commit()
@@ -77,7 +82,10 @@ def update_risk(db, risk_id, data):
     return risk
 
 
-def delete_risk(db, risk_id):
+def delete_risk(
+    db: Session,
+    risk_id: int
+):
 
     risk = (
         db.query(Risk)

@@ -26,7 +26,7 @@ _llm_client = None
 def _get_llm_client():
     global _llm_client
 
-    if _llm_client is None and os.getenv("OPENAI_API_KEY"):
+    if _llm_client is None and os.getenv("GROQ_API_KEY"):
         _llm_client = LLMClient()
 
     return _llm_client

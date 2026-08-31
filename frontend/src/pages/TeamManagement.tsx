@@ -13,10 +13,11 @@ interface TeamMember {
 }
 
 const members: TeamMember[] = [
-  { name: "Rahul", project: "AI Meeting Intelligence" },
-  { name: "Anjali", project: "Customer Portal Revamp" },
-  { name: "Kiran", project: "Analytics Dashboard" },
-  { name: "Suresh", project: "Mobile App Launch" },
+  { name: "Rahul", project: "Front-End Development" },
+  { name: "Anjali", project: "Back-End Development" },
+  { name: "Kiran", project: "Database Implementation" },
+  { name: "Suresh", project: "AI Implementation" },
+  { name: "Priya", project: "UI/UX Design" },
 ];
 
 const TeamManagement = () => {
@@ -31,7 +32,6 @@ const TeamManagement = () => {
           <ListItem key={member.name}>
             <ListItemText
               primary={member.name}
-              secondary={`Project: ${member.project}`}
             />
             <Chip label={member.project} size="small" color="primary" variant="outlined" />
           </ListItem>

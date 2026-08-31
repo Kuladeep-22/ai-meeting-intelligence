@@ -16,7 +16,7 @@ VALUES
 
 'Sprint Planning',
 
-'Weekly sprint planning meeting',
+'Weekly sprint planning meeting to discuss tasks and priorities.',
 
 '2026-08-06',
 
@@ -28,7 +28,7 @@ VALUES
 
 'Architecture Review',
 
-'Discuss project architecture',
+'Discuss project architecture and design decisions.',
 
 '2026-08-08',
 
@@ -40,9 +40,9 @@ VALUES
 
 'AI Model Discussion',
 
-'Decision extraction improvements',
+'Decision extraction improvements and AI model evaluation.',
 
-'2026-08-10',
+'2026-08-28',
 
 'Kuladeep Chowdary'
 

@@ -26,7 +26,7 @@ const ChatWindow = () => {
       id: "welcome",
       sender: "bot",
       message:
-        "Hello! Ask me anything about your meetings.",
+        "Hello! Ask me Your Technical Doubts.",
     },
   ]);
 

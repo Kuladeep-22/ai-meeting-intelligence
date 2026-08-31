@@ -1,27 +1,36 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
-from .schemas import ChatRequest, IndexRequest
+from app.db.session import get_db
+from app.api.auth.dependencies import get_current_user
+from app.models.user import User
 
-from .service import ask_chatbot, index_document
+from .service import ask_chatbot
 
-router = APIRouter(
-    prefix="/chatbot",
-    tags=["Chatbot"]
-)
+
+router = APIRouter()
+
+
+class ChatRequest(BaseModel):
+    question: str
+    context: str = ""
 
 
 @router.post("/ask")
-def chat(request: ChatRequest):
+def ask(
+    request: ChatRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
 
-    return ask_chatbot(
-        request.question
+    answer = ask_chatbot(
+        question=request.question,
+        context=request.context,
+        db=db,
+        user_id=current_user.id,
     )
 
-
-@router.post("/index")
-def index(request: IndexRequest):
-
-    return index_document(
-        request.doc_id,
-        request.text,
-    )
+    return {
+        "answer": answer
+    }

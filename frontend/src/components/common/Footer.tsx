@@ -17,6 +17,9 @@ const Footer = () => {
       <Typography variant="caption">
         Built with React + FastAPI + Flask AI
       </Typography>
+      <Typography variant="body1">
+        Developed By Kuladeep Chowdary.
+      </Typography>
     </Box>
   );
 };

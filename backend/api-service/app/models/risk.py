@@ -1,21 +1,40 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from app.models.base import Base
 
 
 class Risk(Base):
     __tablename__ = "risks"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     meeting_id = Column(
         Integer,
-        ForeignKey("meetings.id")
+        ForeignKey("meetings.id"),
+        nullable=False
     )
 
-    title = Column(String(200))
+    title = Column(
+        String(200),
+        nullable=False
+    )
 
-    assigned_to = Column(String(100))
+    description = Column(
+        Text,
+        nullable=True
+    )
 
-    deadline = Column(String(50))
+    severity = Column(
+        String(50),
+        nullable=False
+    )
 
-    status = Column(String(50))
+    status = Column(
+        String(50),
+        nullable=False,
+        default="Open"
+    )
+
+    created_at = Column(
+        DateTime,
+        nullable=True
+    )

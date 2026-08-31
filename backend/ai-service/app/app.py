@@ -39,13 +39,21 @@ def create_app():
     # ---------------------------------------
 
     @app.route("/", methods=["GET"])
-    def home():
+    def health():
         return {
-            "success": True,
-            "message": "AI Meeting Intelligence AI Service is running"
+            "status": "AI Service is running"
         }
 
+    # IMPORTANT
     return app
 
 
 app = create_app()
+
+
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+    )

@@ -1,24 +1,31 @@
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
-from jose import jwt
+from jose import jwt, JWTError
 from passlib.context import CryptContext
+
 from sqlalchemy.orm import Session
 
 from app.models.user import User
 
 
-# --------------------------------------------------
-# Password configuration
-# --------------------------------------------------
+# ============================================================
+# JWT CONFIGURATION
+# ============================================================
+
+SECRET_KEY = "your-super-secret-key-change-this"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+
+# ============================================================
+# PASSWORD HASHING
+# ============================================================
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
 )
-
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
 
 
 def verify_password(
@@ -31,22 +38,27 @@ def verify_password(
     )
 
 
-# --------------------------------------------------
-# JWT configuration
-# --------------------------------------------------
-
-SECRET_KEY = "your-super-secret-key-change-this"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
 
 
-def create_access_token(data: dict) -> str:
+# ============================================================
+# JWT
+# ============================================================
+
+def create_access_token(
+    data: dict,
+    expires_delta: Optional[timedelta] = None,
+) -> str:
 
     to_encode = data.copy()
 
-    expire = datetime.now(timezone.utc) + timedelta(
-        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    if expires_delta is None:
+        expires_delta = timedelta(
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+
+    expire = datetime.now(timezone.utc) + expires_delta
 
     to_encode.update(
         {
@@ -54,22 +66,25 @@ def create_access_token(data: dict) -> str:
         }
     )
 
-    return jwt.encode(
+    encoded_jwt = jwt.encode(
         to_encode,
         SECRET_KEY,
         algorithm=ALGORITHM,
     )
 
+    return encoded_jwt
 
-# --------------------------------------------------
-# Register
-# --------------------------------------------------
+
+# ============================================================
+# REGISTER USER
+# ============================================================
 
 def register_user(
     db: Session,
     full_name: str,
     email: str,
     password: str,
+    role: str,
 ):
 
     existing_user = (
@@ -83,13 +98,11 @@ def register_user(
             "Email already registered"
         )
 
-    hashed_password = hash_password(password)
-
     user = User(
         full_name=full_name,
         email=email,
-        password=hashed_password,
-        role="Member",
+        password=hash_password(password),
+        role=role,
     )
 
     db.add(user)

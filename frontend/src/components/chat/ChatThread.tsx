@@ -101,7 +101,7 @@ const ChatThread = ({ contact, messages, onSend, sending = false }: Props) => {
             <Chip
               color="success"
               size="small"
-              label={`On call ${formatDuration(callSeconds)}`}
+              label={`Calling ${formatDuration(callSeconds)}`}
             />
           )}
 

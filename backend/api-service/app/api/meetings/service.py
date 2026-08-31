@@ -190,14 +190,17 @@ def delete_meeting(db, meeting_id):
 
 
 def get_meetings_for_user(db, user_id: int):
-    """Meetings where the user is an invited participant."""
+    """Return all upcoming meetings where the user is a  participant."""
 
     _purge_expired_meetings(db)
 
     return (
         db.query(Meeting)
-        .join(MeetingParticipant)
+        .join(MeetingParticipant,
+              MeetingParticipant.meeting_id == Meeting.id)
         .filter(MeetingParticipant.user_id == user_id)
+        .order_by(Meeting.start_time.asc(),
+                  Meeting.start_time.asc())
         .all()
     )
 

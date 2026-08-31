@@ -33,10 +33,10 @@ const Settings = () => {
           label="Dark Mode"
         />
 
-        <FormControlLabel
+        {/* <FormControlLabel
           control={<Switch defaultChecked />}
           label="AI Suggestions"
-        />
+        /> */}
       </Stack>
     </Paper>
   );
