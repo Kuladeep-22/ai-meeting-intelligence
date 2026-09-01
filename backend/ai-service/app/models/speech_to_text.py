@@ -1,21 +1,29 @@
 import whisper
 
 
-class SpeechToText:
+class WhisperService:
 
-    def __init__(self):
+    _model = None
 
-        self.model = whisper.load_model(
-            "base"
-        )
+    @classmethod
+    def get_model(cls):
 
-    def transcribe(
-        self,
-        audio_path: str
-    ):
+        if cls._model is None:
+            print("Loading Whisper model...")
 
-        result = self.model.transcribe(
+            cls._model = whisper.load_model(
+                "tiny"
+            )
+
+            print("Whisper model loaded.")
+
+        return cls._model
+
+    @classmethod
+    def transcribe(cls, audio_path):
+
+        model = cls.get_model()
+
+        return model.transcribe(
             audio_path
         )
-
-        return result["text"]
