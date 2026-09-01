@@ -13,3 +13,4 @@ pandas
 python-dotenv
 flask-cors
 groq
+gunicorn
