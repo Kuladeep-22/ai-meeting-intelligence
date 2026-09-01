@@ -16,11 +16,8 @@ from app.routes.assistant import assistant_bp
 
 
 def create_app():
-    app = Flask(__name__)
 
-    # ---------------------------------------
-    # Register AI/NLP routes
-    # ---------------------------------------
+    app = Flask(__name__)
 
     app.register_blueprint(summarize_bp)
     app.register_blueprint(decision_bp)
@@ -28,21 +25,8 @@ def create_app():
     app.register_blueprint(risk_bp)
     app.register_blueprint(sentiment_bp)
 
-    # ---------------------------------------
-    # Register RAG routes
-    # ---------------------------------------
-
     app.register_blueprint(rag_bp)
-
-    # ---------------------------------------
-    # Register AI Assistant
-    # ---------------------------------------
-
     app.register_blueprint(assistant_bp)
-
-    # ---------------------------------------
-    # Health check
-    # ---------------------------------------
 
     @app.route("/health", methods=["GET", "HEAD"])
     def health():
@@ -50,7 +34,6 @@ def create_app():
             "status": "AI Service is running"
         }
 
-    # IMPORTANT
     return app
 
 
@@ -60,6 +43,6 @@ app = create_app()
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=5000,
-        debug=True
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
     )

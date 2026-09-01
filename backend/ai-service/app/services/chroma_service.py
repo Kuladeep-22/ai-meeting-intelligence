@@ -6,8 +6,6 @@ from app.config import (
     CHROMA_DATABASE,
 )
 
-from app.services.embedding_service import EmbeddingService
-
 
 class ChromaService:
 
@@ -29,14 +27,9 @@ class ChromaService:
         metadata: dict | None = None,
     ):
 
-        embedding = EmbeddingService.generate_embedding(
-            text
-        )
-
         cls.collection.add(
             ids=[document_id],
             documents=[text],
-            embeddings=[embedding],
             metadatas=[metadata or {}],
         )
 
@@ -53,14 +46,8 @@ class ChromaService:
         top_k: int = 5,
     ):
 
-        question_embedding = (
-            EmbeddingService.generate_embedding(
-                question
-            )
-        )
-
         return cls.collection.query(
-            query_embeddings=[question_embedding],
+            query_texts=[question],
             n_results=top_k,
         )
 

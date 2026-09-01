@@ -2,11 +2,7 @@ flask
 requests
 openai
 chromadb
-sentence-transformers
 textblob
-openai-whisper
-numpy
-pandas
 python-dotenv
 flask-cors
 groq

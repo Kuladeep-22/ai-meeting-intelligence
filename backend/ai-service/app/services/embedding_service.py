@@ -3,21 +3,12 @@ from sentence_transformers import SentenceTransformer
 
 class EmbeddingService:
 
-    _model = None
-
-    @classmethod
-    def get_model(cls):
-        if cls._model is None:
-            print("Loading embedding model...")
-
-            cls._model = SentenceTransformer(
-                "all-MiniLM-L6-v2",
-                device="cpu"
-            )
-
-            print("Embedding model loaded.")
-
-        return cls._model
+    @staticmethod
+    def generate_embedding(text: str):
+        raise NotImplementedError(
+            "Local embedding are disabled."
+            "Chroma handles document embeddings."
+        )
 
     @classmethod
     def generate_embedding(cls, text: str):
