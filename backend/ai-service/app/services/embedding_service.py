@@ -1,13 +1,10 @@
-from sentence_transformers import SentenceTransformer
-
-
 class EmbeddingService:
 
     @staticmethod
     def generate_embedding(text: str):
         raise NotImplementedError(
             "Local embedding are disabled."
-            "Chroma handles document embeddings."
+            "Use Chroma Cloud embeddings functionality."
         )
 
     @classmethod

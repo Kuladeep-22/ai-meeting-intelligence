@@ -1,57 +1,33 @@
-from importlib.metadata import metadata
+from typing import Dict, Any
 
-from app.models.embedding_model import (
-    EmbeddingModel,
-)
-
-from app.vectorstore.chroma_db import (
-    ChromaVectorStore,
-)
+from app.services.chroma_service import ChromaService
 
 
 class RetrievalService:
 
-    def __init__(self):
-
-        self.embedding = EmbeddingModel()
-
-        self.vector_db = ChromaVectorStore()
-
+    @staticmethod
     def index(
-        self,
         doc_id: str,
         text: str,
         metadata: dict | None = None,
-    ):
+    ) -> Dict[str, Any]:
 
-        embedding = self.embedding.encode(
-            text
+        return ChromaService.add_document(
+            document_id=doc_id,
+            text=text,
+            metadata=metadata,
         )
 
-        self.vector_db.add_document(
-            doc_id,
-            text,
-            embedding,
-            metadata,
-        )
-
+    @staticmethod
     def retrieve(
-        self,
         question: str,
         top_k: int = 5,
-    ):
+    ) -> Dict[str, Any]:
 
-        embedding = self.embedding.encode(
-            question
+        return ChromaService.search(
+            question=question,
+            top_k=top_k,
         )
 
-        results = self.vector_db.search(
-            embedding,
-            top_k=top_k
-        )
 
-        return results
-
-
-# Shared singleton so the embedding model and vector store are loaded once.
 retrieval_service = RetrievalService()
