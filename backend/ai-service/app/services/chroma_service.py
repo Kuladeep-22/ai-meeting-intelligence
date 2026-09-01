@@ -6,6 +6,8 @@ from app.config import (
     CHROMA_DATABASE,
 )
 
+from app.services.embedding_service import EmbeddingService
+
 
 class ChromaService:
 

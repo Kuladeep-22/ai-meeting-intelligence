@@ -1,11 +1,14 @@
+import os
+import requests
+
+
 class EmbeddingService:
 
-    @staticmethod
-    def generate_embedding(text: str):
-        raise NotImplementedError(
-            "Local embedding are disabled."
-            "Use Chroma Cloud embeddings functionality."
-        )
+    MODEL_URL = (
+        "https://router.huggingface.co/"
+        "hf-inference/models/"
+        "sentence-transformers/all-MiniLM-L6-v2"
+    )
 
     @classmethod
     def generate_embedding(cls, text: str):
@@ -13,12 +16,26 @@ class EmbeddingService:
         if not text or not text.strip():
             return []
 
-        model = cls.get_model()
+        token = os.getenv("HF_TOKEN")
 
-        embedding = model.encode(
-            text,
-            convert_to_numpy=True,
-            normalize_embeddings=True
+        if not token:
+            raise RuntimeError(
+                "HF_TOKEN is not configured"
+            )
+
+        response = requests.post(
+            cls.MODEL_URL,
+            headers={
+                "Authorization": f"Bearer {token}"
+            },
+            json={
+                "inputs": text
+            },
+            timeout=60,
         )
 
-        return embedding.tolist()
+        response.raise_for_status()
+
+        result = response.json()
+
+        return result

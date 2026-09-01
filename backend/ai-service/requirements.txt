@@ -1,8 +1,9 @@
 flask
 requests
-openai
 chromadb
 textblob
+numpy
+pandas
 python-dotenv
 flask-cors
 groq
