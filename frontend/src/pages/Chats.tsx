@@ -10,8 +10,8 @@ const contacts: ChatContact[] = [
   { id: "2", name: "Kuladeep", role: "Backend Developer", online: true, phone: "+91-9876501234" },
   { id: "3", name: "Deepak", role: "UX Designer", online: true, phone: "+91-9811112233" },
   { id: "4", name: "Mastan", role: "QA Engineer", online: false, phone: "+91-9822223344" },
-  { id: "5", name: "Vinay", role: "Data Scientist", online: false, phone: "+91-9833334455" },
-  { id: "6", name: "Ramesh", role: "DevOps Engineer", online: false, phone: "+91-9844445566" },
+  { id: "5", name: "Ramesh", role: "Data Scientist", online: false, phone: "+91-9833334455" },
+  { id: "6", name: "Vinay", role: "DevOps Engineer", online: false, phone: "+91-9844445566" },
 ];
 
 const initialMessages: ChatMessageItem[] = [

@@ -1,3 +1,5 @@
+from importlib.metadata import metadata
+
 from app.models.embedding_model import (
     EmbeddingModel,
 )
@@ -18,7 +20,8 @@ class RetrievalService:
     def index(
         self,
         doc_id: str,
-        text: str
+        text: str,
+        metadata: dict | None = None,
     ):
 
         embedding = self.embedding.encode(
@@ -28,13 +31,14 @@ class RetrievalService:
         self.vector_db.add_document(
             doc_id,
             text,
-            embedding
+            embedding,
+            metadata,
         )
 
     def retrieve(
         self,
         question: str,
-        top_k: int = 5
+        top_k: int = 5,
     ):
 
         embedding = self.embedding.encode(

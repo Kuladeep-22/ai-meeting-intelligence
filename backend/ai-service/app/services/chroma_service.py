@@ -1,13 +1,20 @@
 import chromadb
 
-from app.config import CHROMA_PATH
+from app.config import (
+    CHROMA_API_KEY,
+    CHROMA_TENANT,
+    CHROMA_DATABASE,
+)
+
 from app.services.embedding_service import EmbeddingService
 
 
 class ChromaService:
 
-    client = chromadb.PersistentClient(
-        path=str(CHROMA_PATH)
+    client = chromadb.CloudClient(
+        tenant=CHROMA_TENANT,
+        database=CHROMA_DATABASE,
+        api_key=CHROMA_API_KEY,
     )
 
     collection = client.get_or_create_collection(
@@ -19,29 +26,31 @@ class ChromaService:
         cls,
         document_id: str,
         text: str,
-        metadata: dict | None = None
+        metadata: dict | None = None,
     ):
 
-        embedding = EmbeddingService.generate_embedding(text)
+        embedding = EmbeddingService.generate_embedding(
+            text
+        )
 
         cls.collection.add(
             ids=[document_id],
             documents=[text],
             embeddings=[embedding],
-            metadatas=[metadata or {}]
+            metadatas=[metadata or {}],
         )
 
         return {
             "success": True,
             "message": "Document stored successfully",
-            "id": document_id
+            "id": document_id,
         }
 
     @classmethod
     def search(
         cls,
         question: str,
-        top_k: int = 5
+        top_k: int = 5,
     ):
 
         question_embedding = (
@@ -52,11 +61,10 @@ class ChromaService:
 
         return cls.collection.query(
             query_embeddings=[question_embedding],
-            n_results=top_k
+            n_results=top_k,
         )
-
-        return results
 
     @classmethod
     def count(cls):
+
         return cls.collection.count()

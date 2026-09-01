@@ -12,3 +12,5 @@ requests
 email-validator
 websockets
 apscheduler
+psycopg
+upstash-redis

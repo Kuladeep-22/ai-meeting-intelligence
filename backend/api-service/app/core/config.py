@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -23,8 +23,15 @@ class Settings(BaseSettings):
         "http://localhost:5000"
     )
 
-    class Config:
-        env_file = ".env"
+    # Upstash Redis
+    UPSTASH_REDIS_REST_URL: str = ""
+
+    UPSTASH_REDIS_REST_TOKEN: str = ""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
 
 settings = Settings()
