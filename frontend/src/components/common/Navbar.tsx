@@ -81,7 +81,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
         <Box ml={3}>
           <IconButton onClick={handleAvatarClick} size="small">
-            <Avatar sx={{ bgcolor: "secondary.main", fontWeight: 600 }}>K</Avatar>
+            <Avatar sx={{ bgcolor: "secondary.main", fontWeight: 600 }}></Avatar>
           </IconButton>
 
           <Menu
