@@ -28,6 +28,13 @@ def create_app():
     app.register_blueprint(rag_bp)
     app.register_blueprint(assistant_bp)
 
+    @app.route("/")
+    def home():
+        return {
+            "message": "AI Meeting Intelligence AI Service is running",
+            "status": "success"
+    }
+
     @app.route("/health", methods=["GET", "HEAD"])
     def health():
         return {
