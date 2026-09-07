@@ -4,7 +4,6 @@ from fastapi import (
     HTTPException,
     status,
 )
-from pydantic import BaseModel
 
 from sqlalchemy.orm import Session
 
@@ -18,8 +17,8 @@ from app.api.auth.schemas import (
 
 from app.api.auth.service import (
     register_user,
-    verify_password,
-    create_access_token,
+    authenticate_user,
+    create_user_access_token,
 )
 
 from app.api.auth.dependencies import (
@@ -32,9 +31,6 @@ router = APIRouter(
     tags=["Authentication"],
 )
 
-class ChatRequest(BaseModel):
-    question: str
-    context: str = ""
 
 # ==================================================
 # REGISTER
@@ -45,9 +41,7 @@ def register(
     data: RegisterRequest,
     db: Session = Depends(get_db),
 ):
-
     try:
-
         user = register_user(
             db=db,
             full_name=data.full_name,
@@ -58,7 +52,7 @@ def register(
 
         return {
             "success": True,
-            "message": "Registration successfully",
+            "message": "Registration successful",
             "user": {
                 "id": user.id,
                 "full_name": user.full_name,
@@ -68,7 +62,6 @@ def register(
         }
 
     except ValueError as e:
-
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -84,41 +77,26 @@ def login(
     data: LoginRequest,
     db: Session = Depends(get_db),
 ):
-
-    user = (
-        db.query(User)
-        .filter(
-            User.email == str(data.email)
-        )
-        .first()
-    )
-
-    if user is None:
-
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
-            headers={
-                "WWW-Authenticate": "Bearer"
-            },
-        )
-
     try:
+        user = authenticate_user(
+            db=db,
+            email=str(data.email),
+            password=data.password,
+        )
 
-        password_valid = verify_password(
-            data.password,
-            user.password,
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid password",
         )
 
     except Exception:
-
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Unable to verify password",
+            detail="Unable to authenticate user",
         )
 
-    if not password_valid:
-
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -127,12 +105,7 @@ def login(
             },
         )
 
-    access_token = create_access_token(
-        {
-            "sub": str(user.id),
-            "email": user.email,
-        }
-    )
+    access_token = create_user_access_token(user)
 
     return {
         "success": True,
@@ -158,7 +131,6 @@ def me(
         get_current_user
     ),
 ):
-
     return {
         "success": True,
         "message": "Current user retrieved successfully",
