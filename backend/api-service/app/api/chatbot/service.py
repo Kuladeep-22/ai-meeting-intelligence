@@ -8,6 +8,8 @@ from app.models.decision import Decision
 from app.models.action_item import ActionItem
 from app.models.risk import Risk
 
+from app.config import settings
+
 
 AI_SERVICE_URL = (
     f"{settings.FLASK_AI_URL}/api/v1/chat"

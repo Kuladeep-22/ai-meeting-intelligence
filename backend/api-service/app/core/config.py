@@ -19,9 +19,7 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    FLASK_AI_URL: str = (
-        "https://ai-meeting-ai-service.onrender.com"
-    )
+    AI_SERVICE_URL = f"{settings.FLASK_AI_URL}/api/v1/chat"
 
     # Upstash Redis
     UPSTASH_REDIS_REST_URL: str = ""
