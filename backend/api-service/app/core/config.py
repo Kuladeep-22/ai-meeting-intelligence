@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     FLASK_AI_URL: str = (
-        "http://localhost:5000"
+        "https://ai-meeting-ai-service.onrender.com"
     )
 
     # Upstash Redis

@@ -9,7 +9,9 @@ from app.models.action_item import ActionItem
 from app.models.risk import Risk
 
 
-AI_SERVICE_URL = "http://localhost:5000/api/v1/chat"
+AI_SERVICE_URL = (
+    f"{settings.FLASK_AI_URL}/api/v1/chat"
+)
 
 
 # ============================================================
