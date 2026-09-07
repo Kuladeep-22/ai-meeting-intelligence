@@ -1,77 +1,11 @@
-from datetime import datetime, timedelta, timezone
-from typing import Optional
-
-from jose import jwt, JWTError
-from passlib.context import CryptContext
-
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-
-
-# ============================================================
-# JWT CONFIGURATION
-# ============================================================
-
-SECRET_KEY = "your-super-secret-key-change-this"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
-
-# ============================================================
-# PASSWORD HASHING
-# ============================================================
-
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto",
+from app.core.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
 )
-
-
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-def verify_password(
-    plain_password: str,
-    hashed_password: str,
-) -> bool:
-    return pwd_context.verify(
-        plain_password,
-        hashed_password,
-    )
-
-
-# ============================================================
-# JWT
-# ============================================================
-
-def create_access_token(
-    data: dict,
-    expires_delta: Optional[timedelta] = None,
-) -> str:
-
-    to_encode = data.copy()
-
-    if expires_delta is None:
-        expires_delta = timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-        )
-
-    expire = datetime.now(timezone.utc) + expires_delta
-
-    to_encode.update(
-        {
-            "exp": expire,
-        }
-    )
-
-    encoded_jwt = jwt.encode(
-        to_encode,
-        SECRET_KEY,
-        algorithm=ALGORITHM,
-    )
-
-    return encoded_jwt
 
 
 # ============================================================
@@ -85,7 +19,7 @@ def register_user(
     password: str,
     role: str,
 ):
-
+    # Check whether email already exists
     existing_user = (
         db.query(User)
         .filter(User.email == email)
@@ -93,10 +27,9 @@ def register_user(
     )
 
     if existing_user:
-        raise ValueError(
-            "Email already registered"
-        )
+        raise ValueError("Email already registered")
 
+    # Create new user
     user = User(
         full_name=full_name,
         email=email,
@@ -109,3 +42,44 @@ def register_user(
     db.refresh(user)
 
     return user
+
+
+# ============================================================
+# AUTHENTICATE USER
+# ============================================================
+
+def authenticate_user(
+    db: Session,
+    email: str,
+    password: str,
+):
+    user = (
+        db.query(User)
+        .filter(User.email == email)
+        .first()
+    )
+
+    if not user:
+        return None
+
+    if not verify_password(
+        password,
+        user.password,
+    ):
+        return None
+
+    return user
+
+
+# ============================================================
+# CREATE LOGIN TOKEN
+# ============================================================
+
+def create_user_access_token(user: User):
+    token_data = {
+        "sub": str(user.id),
+        "email": user.email,
+        "role": user.role,
+    }
+
+    return create_access_token(token_data)
