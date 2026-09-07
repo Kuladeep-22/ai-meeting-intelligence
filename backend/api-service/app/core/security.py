@@ -19,38 +19,29 @@ pwd_context = CryptContext(
 MAX_BCRYPT_PASSWORD_BYTES = 72
 
 
-def _prepare_password(password: str) -> str:
+def validate_password_length(password: str) -> None:
     """
-    Prepare password before passing it to bcrypt.
+    Validate password length for bcrypt.
 
-    bcrypt has a maximum password length of 72 bytes.
-    Since UTF-8 characters can occupy multiple bytes,
-    we truncate based on bytes rather than characters.
+    bcrypt supports a maximum of 72 bytes.
     """
 
-    password_bytes = password.encode("utf-8")
-
-    if len(password_bytes) <= MAX_BCRYPT_PASSWORD_BYTES:
-        return password
-
-    # Truncate to 72 bytes
-    password_bytes = password_bytes[
-        :MAX_BCRYPT_PASSWORD_BYTES
-    ]
-
-    # Safely decode UTF-8 without leaving a broken character
-    return password_bytes.decode(
-        "utf-8",
-        errors="ignore",
+    password_bytes = len(
+        password.encode("utf-8")
     )
+
+    if password_bytes > MAX_BCRYPT_PASSWORD_BYTES:
+        raise ValueError(
+            "Password must be 72 bytes or fewer."
+        )
 
 
 def hash_password(password: str) -> str:
     """
-    Hash a plain-text password using bcrypt.
+    Hash a password using bcrypt.
     """
 
-    password = _prepare_password(password)
+    validate_password_length(password)
 
     return pwd_context.hash(password)
 
@@ -60,12 +51,10 @@ def verify_password(
     hashed_password: str,
 ) -> bool:
     """
-    Verify a plain-text password against a bcrypt hash.
+    Verify a password against a bcrypt hash.
     """
 
-    plain_password = _prepare_password(
-        plain_password
-    )
+    validate_password_length(plain_password)
 
     return pwd_context.verify(
         plain_password,
