@@ -32,6 +32,6 @@
     "esbuild@0.28.2": true
   },
   "engines": {
-  "node": "20.x"
+  "node": "22.x"
   }
 }
