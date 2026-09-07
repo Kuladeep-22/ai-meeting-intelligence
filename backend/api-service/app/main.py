@@ -46,7 +46,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ai-meeting-intelligence-silk.vercel.app/login"
+        "https://ai-meeting-intelligence-silk.vercel.app/"
     ],
     allow_credentials=True,
     allow_methods=["*"],
