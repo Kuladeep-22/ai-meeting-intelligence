@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
 # ============================================================
-# API Routers
+# API ROUTERS
 # ============================================================
 
 from app.api.auth.routes import router as auth_router
@@ -18,14 +19,14 @@ from app.api.chatbot.routes import router as chatbot_router
 
 
 # ============================================================
-# Configuration
+# CONFIGURATION
 # ============================================================
 
 API_PREFIX = "/api/v1"
 
 
 # ============================================================
-# Application
+# APPLICATION
 # ============================================================
 
 app = FastAPI(
@@ -40,36 +41,43 @@ app = FastAPI(
 
 
 # ============================================================
-# CORS
+# CORS CONFIGURATION
 # ============================================================
+
+origins = [
+    # Production frontend
+    "https://ai-meeting-intelligence-silk.vercel.app",
+
+    # Local development
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ai-meeting-intelligence-silk.vercel.app/"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-API_PREFIX = "/api/v1"
-
 
 # ============================================================
-# Authentication
+# AUTHENTICATION
 #
-# auth_router routes should define:
+# auth/routes.py has:
 #
-#   POST /register
-#   POST /login
-#   GET  /me
+#     router = APIRouter(
+#         prefix="/auth",
+#         tags=["Authentication"],
+#     )
 #
-# Therefore:
+# Therefore the final endpoints are:
 #
-#   POST /api/v1/register
-#   POST /api/v1/login
-#   GET  /api/v1/me
+# POST /api/v1/auth/register
+# POST /api/v1/auth/login
+# GET  /api/v1/auth/me
 # ============================================================
 
 app.include_router(
@@ -79,7 +87,7 @@ app.include_router(
 
 
 # ============================================================
-# Users
+# USERS
 # ============================================================
 
 app.include_router(
@@ -89,7 +97,7 @@ app.include_router(
 
 
 # ============================================================
-# Teams
+# TEAMS
 # ============================================================
 
 app.include_router(
@@ -99,7 +107,7 @@ app.include_router(
 
 
 # ============================================================
-# Meetings
+# MEETINGS
 # ============================================================
 
 app.include_router(
@@ -109,7 +117,7 @@ app.include_router(
 
 
 # ============================================================
-# Decisions
+# DECISIONS
 # ============================================================
 
 app.include_router(
@@ -119,7 +127,7 @@ app.include_router(
 
 
 # ============================================================
-# Action Items
+# ACTION ITEMS
 # ============================================================
 
 app.include_router(
@@ -129,7 +137,7 @@ app.include_router(
 
 
 # ============================================================
-# Risks
+# RISKS
 # ============================================================
 
 app.include_router(
@@ -139,7 +147,7 @@ app.include_router(
 
 
 # ============================================================
-# Analytics
+# ANALYTICS
 # ============================================================
 
 app.include_router(
@@ -149,7 +157,7 @@ app.include_router(
 
 
 # ============================================================
-# Notifications
+# NOTIFICATIONS
 # ============================================================
 
 app.include_router(
@@ -161,18 +169,13 @@ app.include_router(
 # ============================================================
 # AI CHATBOT
 #
-# chatbot/routes.py MUST define:
+# chatbot/routes.py should have:
 #
 #     @router.post("/ask")
 #
-# Since we add:
+# Final endpoint:
 #
-#     prefix="/api/v1/chatbot"
-#
-# the final endpoint is:
-#
-#     POST /api/v1/chatbot/ask
-#
+# POST /api/v1/chatbot/ask
 # ============================================================
 
 app.include_router(
@@ -182,10 +185,10 @@ app.include_router(
 
 
 # ============================================================
-# Health Check
+# HEALTH CHECK
 # ============================================================
 
-@app.get("/",)
+@app.get("/")
 def health_check():
     return {
         "status": "AI Meeting Intelligence API is running"
