@@ -17,6 +17,7 @@ class RegisterRequest(BaseModel):
     password: str
     role: UserRole = UserRole.EMPLOYEE
 
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str

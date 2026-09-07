@@ -19,14 +19,28 @@ MAX_BCRYPT_PASSWORD_BYTES = 72
 
 
 def validate_password_length(password: str) -> None:
-    if len(password.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES:
+    """
+    Validate bcrypt password length.
+
+    bcrypt supports a maximum of 72 bytes.
+    UTF-8 characters can use more than one byte.
+    """
+
+    password_bytes = len(password.encode("utf-8"))
+
+    if password_bytes > MAX_BCRYPT_PASSWORD_BYTES:
         raise ValueError(
-            "Password cannot be longer than 72 bytes"
+            "Password must be 72 bytes or fewer."
         )
 
 
 def hash_password(password: str) -> str:
+    """
+    Hash a plain-text password using bcrypt.
+    """
+
     validate_password_length(password)
+
     return pwd_context.hash(password)
 
 
@@ -34,6 +48,10 @@ def verify_password(
     plain_password: str,
     hashed_password: str,
 ) -> bool:
+    """
+    Verify a plain-text password against a bcrypt hash.
+    """
+
     validate_password_length(plain_password)
 
     return pwd_context.verify(
@@ -47,6 +65,9 @@ def verify_password(
 # ============================================================
 
 def create_access_token(data: dict) -> str:
+    """
+    Create a JWT access token.
+    """
 
     payload = data.copy()
 
