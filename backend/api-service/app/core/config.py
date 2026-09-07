@@ -19,7 +19,8 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    AI_SERVICE_URL = f"{settings.FLASK_AI_URL}/api/v1/chat"
+    # Flask AI Service
+    FLASK_AI_URL: str = "http://localhost:5000"
 
     # Upstash Redis
     UPSTASH_REDIS_REST_URL: str = ""
