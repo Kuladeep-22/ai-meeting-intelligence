@@ -1,10 +1,3 @@
-from sqlalchemy.orm import DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    pass
-
-
 # Existing models
 from app.models.user import User
 from app.models.team import Team
