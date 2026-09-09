@@ -7,7 +7,7 @@ export interface ChatAskResponse {
 
 export const chatbotApi = {
   ask: (question: string) =>
-    api.post<ChatAskResponse>("/chatbot/ask", { question }),
+    api.post("/chatbot/ask", { question }),
 
   index: (docId: string, text: string) =>
     api.post("/chatbot/index", { doc_id: docId, text }),
