@@ -49,19 +49,25 @@ const Login = () => {
       console.log("Login result:", result);
 
       if (result.success) {
-        // Login successful
-        navigate("/");
+        // Login successful - small delay to ensure token is stored
+        setTimeout(() => {
+          navigate("/");
+        }, 100);
       } else {
-        // Your useAuth returns `error`, not `message`
-        setError(result.error || "Login failed");
+        const errorMsg = result.error || result.message || "Login failed";
+        console.error("Login failed:", errorMsg);
+        setError(errorMsg);
       }
     } catch (error: any) {
       console.error("Login page error:", error);
 
-      setError(
+      const errorMsg =
         error?.response?.data?.detail ||
-        "Unable to login. Please try again."
-      );
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to login. Please try again.";
+      
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

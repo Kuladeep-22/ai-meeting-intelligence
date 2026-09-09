@@ -124,19 +124,17 @@ export const useAuth = () => {
       };
 
     } catch (error: any) {
+      const errorDetail = error.response?.data?.detail || error.response?.data?.message || error.message;
+      
       console.error(
         "LOGIN ERROR:",
         error.response?.status,
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       return {
         success: false,
-        error:
-          error.response?.data?.detail ||
-          error.response?.data?.message ||
-          "Login failed",
+        error: errorDetail || "Login failed",
       };
     }
   };

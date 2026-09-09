@@ -1,12 +1,18 @@
 import axios from "axios";
 
+const baseURL = import.meta.env.VITE_API_URL || "https://ai-meeting-api-z144.onrender.com/api/v1";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL,
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+if (!import.meta.env.VITE_API_URL) {
+  console.warn("VITE_API_URL not set, using default:", baseURL);
+}
 
 api.interceptors.request.use(
   (config) => {
