@@ -21,7 +21,7 @@ interface MeetingCardProps {
 const MeetingCard = ({ meeting }: MeetingCardProps) => {
   const navigate = useNavigate();
 
-  const handleJoin = () => {
+  const handleJoinMeeting = () => {
     navigate(`/meetings/${meeting.id}/room`);
   };
 
@@ -52,7 +52,7 @@ const MeetingCard = ({ meeting }: MeetingCardProps) => {
 
           <Button
             variant="contained"
-            onClick={handleJoin}
+            onClick={handleJoinMeeting}
           >
             Join Meeting
           </Button>

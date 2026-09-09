@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
 
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -17,7 +17,13 @@ import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 
-import MeetingRoom from "../pages/MeetingRoom";
+import MeetingRoom from "../components/meetings/room/MeetingRoom";
+
+// Wrapper to pass meetingId to MeetingRoom
+const MeetingRoomWrapper = () => {
+  const { id } = useParams<{ id: string }>();
+  return <MeetingRoom meetingId={id || ""} />;
+};
 
 const AppRoutes = () => {
   return (
@@ -171,7 +177,7 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <MainLayout>
-                <MeetingRoom />
+                <MeetingRoomWrapper />
               </MainLayout>
             </ProtectedRoute>
           }
