@@ -121,9 +121,8 @@ class ChatService:
                 getattr(
                     settings,
                     "AI_SERVICE_URL",
-                    "http://localhost:8001"
+                    f"{settings.FLASK_AI_URL}/api/v1/chat"
                 )
-                + "/api/v1/chat"
             )
 
             payload = {
