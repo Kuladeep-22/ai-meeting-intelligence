@@ -46,6 +46,8 @@ app = FastAPI(
 
 origins = [
     "https://ai-meeting-intelligence-q2t3ykbkw-open-source3.vercel.app",
+    "https://ai-meeting-intelligence-silk.vercel.app",
+    
     "http://localhost:5173",
     "http://localhost:3000",
 ]
