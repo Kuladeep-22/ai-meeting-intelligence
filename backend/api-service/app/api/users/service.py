@@ -2,8 +2,13 @@ from fastapi import HTTPException
 from app.models.user import User
 
 
-def get_all_users(db):
-    return db.query(User).all()
+def get_all_users(db, exclude_user_id: int | None = None):
+    query = db.query(User)
+    
+    if exclude_user_id:
+        query = query.filter(User.id != exclude_user_id)
+    
+    return query.all()
 
 
 def get_user_by_id(db, user_id: int):
