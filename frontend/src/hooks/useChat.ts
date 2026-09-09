@@ -11,6 +11,8 @@ import {
   ChatMessage,
 } from "../api/chatApi";
 
+import { UserOption } from "../api/usersApi";
+
 import {
   useChatStore,
 } from "../store/chatStore";
@@ -231,6 +233,46 @@ export const useChat = () => {
     ]
   );
 
+  // Create new session with a specific user
+  const createChatWithUser =
+    useCallback(
+      async (user: UserOption) => {
+        try {
+          const session =
+            await createChatSession(
+              `Chat with ${user.full_name}`
+            );
+
+          setSessions([
+            session,
+            ...sessions,
+          ]);
+
+          clearMessages();
+
+          setActiveSession(
+            session.id
+          );
+
+          connectWebSocket(
+            session.id
+          );
+        } catch (error) {
+          console.error(
+            "Failed to create chat with user",
+            error
+          );
+        }
+      },
+      [
+        sessions,
+        setSessions,
+        clearMessages,
+        setActiveSession,
+        connectWebSocket,
+      ]
+    );
+
   // Send message
   const sendMessage = useCallback(
     (message: string) => {
@@ -307,6 +349,7 @@ export const useChat = () => {
     sendMessage,
     selectSession,
     newChat,
+    createChatWithUser,
   };
 };
 

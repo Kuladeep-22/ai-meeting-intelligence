@@ -8,17 +8,21 @@ import {
 } from "@mui/material";
 
 import { ChatSession } from "../../api/chatApi";
+import { UserOption } from "../../api/usersApi";
+import UserSearch from "./UserSearch";
 
 interface ChatSessionListProps {
   sessions: ChatSession[];
   activeSessionId: number | null;
   onSelect: (sessionId: number) => void;
+  onUserSelect?: (user: UserOption) => void;
 }
 
 const ChatSessionList = ({
   sessions,
   activeSessionId,
   onSelect,
+  onUserSelect,
 }: ChatSessionListProps) => {
   return (
     <Box
@@ -27,18 +31,28 @@ const ChatSessionList = ({
         borderRight: "1px solid #ddd",
         height: "100%",
         overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Typography
-        variant="subtitle1"
-        sx={{ padding: 2 }}
-      >
-        Chat History
-      </Typography>
+      <Box sx={{ padding: 2 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{ mb: 2 }}
+        >
+          Chat History
+        </Typography>
+
+        {onUserSelect && (
+          <UserSearch
+            onUserSelect={onUserSelect}
+          />
+        )}
+      </Box>
 
       <Divider />
 
-      <List>
+      <List sx={{ flex: 1, overflowY: "auto" }}>
         {sessions.length === 0 ? (
           <Typography
             variant="body2"

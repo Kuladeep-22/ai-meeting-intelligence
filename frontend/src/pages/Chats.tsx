@@ -9,6 +9,7 @@ import ChatInput from "../components/chatbot/ChatInput";
 import ChatMessage from "../components/chatbot/ChatMessage";
 import ChatSessionList from "../components/chatbot/ChatSessionList";
 import TypingIndicator from "../components/chatbot/TypingIndicator";
+import { UserOption } from "../api/usersApi";
 
 import useChat from "../hooks/useChat";
 
@@ -23,7 +24,14 @@ const Chat = () => {
     sendMessage,
     selectSession,
     newChat,
+    createChatWithUser,
   } = useChat();
+
+  const handleUserSelect = async (
+    user: UserOption
+  ) => {
+    await createChatWithUser(user);
+  };
 
   return (
     <Box
@@ -40,6 +48,7 @@ const Chat = () => {
           activeSessionId
         }
         onSelect={selectSession}
+        onUserSelect={handleUserSelect}
       />
 
       {/* Chat area */}
