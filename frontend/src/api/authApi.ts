@@ -7,12 +7,12 @@ export interface LoginPayload {
 
 export interface RegisterPayload {
   full_name: string;
+  role: string;
   email: string;
   password: string;
 }
 
 export const authApi = {
-
   register: (data: RegisterPayload) =>
     api.post("/auth/register", data),
 

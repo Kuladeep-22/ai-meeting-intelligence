@@ -8,12 +8,14 @@ import {
   Box,
   Link,
   Alert,
+  MenuItem,
 } from "@mui/material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +25,12 @@ const Register = () => {
   const { register } = useAuth();
 
   const handleRegister = async () => {
-    if (!fullName.trim() || !email.trim() || !password) {
+    if (
+      !fullName.trim() ||
+      !role.trim() ||
+      !email.trim() ||
+      !password
+    ) {
       setError("Please fill in all fields");
       return;
     }
@@ -34,6 +41,7 @@ const Register = () => {
     try {
       const result = await register(
         fullName.trim(),
+        role.trim(),
         email.trim(),
         password
       );
@@ -86,6 +94,7 @@ const Register = () => {
       )}
 
       <Stack spacing={2}>
+        {/* Full Name */}
         <TextField
           label="Full Name"
           value={fullName}
@@ -94,6 +103,22 @@ const Register = () => {
           fullWidth
         />
 
+        {/* Role */}
+        <TextField
+          select
+          label="Role"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          disabled={loading}
+          fullWidth
+        >
+          <MenuItem value="Developer">Developer</MenuItem>
+          <MenuItem value="Manager">Manager</MenuItem>
+          <MenuItem value="Team Lead">Team Lead</MenuItem>
+          <MenuItem value="Member">Member</MenuItem>
+        </TextField>
+
+        {/* Email */}
         <TextField
           label="Email"
           type="email"
@@ -103,6 +128,7 @@ const Register = () => {
           fullWidth
         />
 
+        {/* Password */}
         <TextField
           label="Password"
           type="password"
@@ -139,3 +165,4 @@ const Register = () => {
 };
 
 export default Register;
+

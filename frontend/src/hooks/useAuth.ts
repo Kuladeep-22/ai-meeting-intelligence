@@ -16,12 +16,14 @@ export const useAuth = () => {
 
   const register = async (
     fullName: string,
+    role: string,
     email: string,
     password: string
   ) => {
     try {
       const response = await authApi.register({
         full_name: fullName.trim(),
+        role: role.trim(),
         email: email.trim(),
         password,
       });

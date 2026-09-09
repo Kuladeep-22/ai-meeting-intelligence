@@ -1,38 +1,55 @@
 import {
+  Box,
   Paper,
   Typography,
 } from "@mui/material";
 
-interface Props {
-  sender: "user" | "bot";
-  message: string;
+import { ChatMessage as ChatMessageType } from "../../api/chatApi";
+
+interface ChatMessageProps {
+  message: ChatMessageType;
 }
 
 const ChatMessage = ({
-  sender,
   message,
-}: Props) => {
+}: ChatMessageProps) => {
+  const isUser =
+    message.role === "user";
+
   return (
-    <Paper
+    <Box
       sx={{
-        p: 2,
-        my: 1,
-        maxWidth: "75%",
-        ml: sender === "user" ? "auto" : 0,
-        bgcolor:
-          sender === "user"
-            ? "#1976d2"
-            : "#eeeeee",
-        color:
-          sender === "user"
-            ? "white"
-            : "black",
+        display: "flex",
+        justifyContent: isUser
+          ? "flex-end"
+          : "flex-start",
+        marginBottom: 2,
       }}
     >
-      <Typography>
-        {message}
-      </Typography>
-    </Paper>
+      <Paper
+        elevation={1}
+        sx={{
+          padding: 1.5,
+          maxWidth: "70%",
+          borderRadius: 2,
+        }}
+      >
+        <Typography variant="body1">
+          {message.content}
+        </Typography>
+
+        {message.created_at && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+          >
+            {new Date(
+              message.created_at
+            ).toLocaleTimeString()}
+          </Typography>
+        )}
+      </Paper>
+    </Box>
   );
 };
 
