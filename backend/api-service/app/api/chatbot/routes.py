@@ -9,7 +9,10 @@ from app.models.user import User
 from .service import ask_chatbot
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/chatbot",
+    tags=["chatbot"],
+)
 
 
 class ChatRequest(BaseModel):

@@ -90,10 +90,11 @@ def login(
             detail="Invalid password",
         )
 
-    except Exception:
+    except Exception as e:
+        print("LOGIN ERROR:", repr(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Unable to authenticate user",
+            detail=f"Unable to authenticate user: {str(e)}",
         )
 
     if user is None:
