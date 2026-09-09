@@ -4,17 +4,16 @@ import {
   Typography,
 } from "@mui/material";
 
-import { ChatMessage as ChatMessageType } from "../../api/chatApi";
-
 interface ChatMessageProps {
-  message: ChatMessageType;
+  sender: "user" | "bot";
+  message: string;
 }
 
 const ChatMessage = ({
+  sender,
   message,
 }: ChatMessageProps) => {
-  const isUser =
-    message.role === "user";
+  const isUser = sender === "user";
 
   return (
     <Box
@@ -35,19 +34,8 @@ const ChatMessage = ({
         }}
       >
         <Typography variant="body1">
-          {message.content}
+          {message}
         </Typography>
-
-        {message.created_at && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-          >
-            {new Date(
-              message.created_at
-            ).toLocaleTimeString()}
-          </Typography>
-        )}
       </Paper>
     </Box>
   );

@@ -107,7 +107,12 @@ const Chat = () => {
                     message.id ??
                     `${message.role}-${index}`
                   }
-                  message={message}
+                  sender={
+                    message.role === "assistant"
+                      ? "bot"
+                      : "user"
+                  }
+                  message={message.content}
                 />
               )
             )
