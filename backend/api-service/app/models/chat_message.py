@@ -30,6 +30,12 @@ class ChatMessage(Base):
         index=True
     )
 
+    sender_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+
     role: Mapped[str] = mapped_column(
         String(20),
         nullable=False

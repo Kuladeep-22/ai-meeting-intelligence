@@ -19,13 +19,29 @@ class ChatService:
     def create_session(
         db: Session,
         user_id: int,
-        title: str = "New Chat"
+        title: str = "New Chat",
+        recipient_id: int | None = None
     ) -> ChatSession:
+
+        # For 1-on-1 chats, check if one already exists
+        if recipient_id:
+            existing_session = (
+                ChatSessionRepository
+                .get_1on1_chat(
+                    db=db,
+                    user_id=user_id,
+                    recipient_id=recipient_id
+                )
+            )
+
+            if existing_session:
+                return existing_session
 
         return ChatSessionRepository.create(
             db=db,
             user_id=user_id,
-            title=title
+            title=title,
+            recipient_id=recipient_id
         )
 
     @staticmethod
@@ -65,28 +81,32 @@ class ChatService:
     def save_user_message(
         db: Session,
         session_id: int,
-        content: str
+        content: str,
+        sender_id: int | None = None
     ) -> ChatMessage:
 
         return ChatMessageRepository.create(
             db=db,
             session_id=session_id,
             role="user",
-            content=content
+            content=content,
+            sender_id=sender_id
         )
 
     @staticmethod
     def save_assistant_message(
         db: Session,
         session_id: int,
-        content: str
+        content: str,
+        sender_id: int | None = None
     ) -> ChatMessage:
 
         return ChatMessageRepository.create(
             db=db,
             session_id=session_id,
             role="assistant",
-            content=content
+            content=content,
+            sender_id=sender_id
         )
 
     @staticmethod

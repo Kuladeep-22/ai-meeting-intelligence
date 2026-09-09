@@ -1,11 +1,15 @@
 from fastapi import (
     APIRouter,
     WebSocket,
-    WebSocketDisconnect
+    WebSocketDisconnect,
+    Query
 )
+
+from jose import jwt, JWTError
 
 from app.db.session import SessionLocal
 from app.services.chat_service import ChatService
+from app.core.config import settings
 
 
 router = APIRouter()
@@ -16,12 +20,33 @@ router = APIRouter()
 )
 async def chat_socket(
     websocket: WebSocket,
-    session_id: int
+    session_id: int,
+    token: str = Query(None)
 ):
 
     await websocket.accept()
 
     db = SessionLocal()
+
+    # Authenticate user from token
+    user_id = None
+    if token:
+        try:
+            payload = jwt.decode(
+                token,
+                settings.SECRET_KEY,
+                algorithms=[settings.ALGORITHM],
+            )
+            user_id = payload.get("sub")
+        except JWTError:
+            await websocket.send_json(
+                {
+                    "type": "error",
+                    "message": "Invalid token"
+                }
+            )
+            await websocket.close()
+            return
 
     try:
 
@@ -81,37 +106,77 @@ async def chat_socket(
             )
 
             # Process message
-            user_message, assistant_message = (
-                await ChatService.process_message(
-                    db=db,
-                    session_id=session_id,
-                    message=message
-                )
-            )
-
-            # Send assistant response
-            await websocket.send_json(
-                {
-                    "type": "assistant_message",
-                    "session_id": session_id,
-                    "message_id": assistant_message.id,
-                    "content": assistant_message.content,
-                    "role": "assistant",
-                    "created_at": (
-                        assistant_message
-                        .created_at
-                        .isoformat()
+            if session.recipient_id:
+                # User-to-user messaging
+                user_message = (
+                    ChatService
+                    .save_user_message(
+                        db=db,
+                        session_id=session_id,
+                        content=message,
+                        sender_id=user_id
                     )
-                }
-            )
+                )
 
-            # Stop typing indicator
-            await websocket.send_json(
-                {
-                    "type": "typing",
-                    "content": False
-                }
-            )
+                # Send confirmation to sender
+                await websocket.send_json(
+                    {
+                        "type": "message",
+                        "session_id": session_id,
+                        "message_id": user_message.id,
+                        "content": user_message.content,
+                        "role": "user",
+                        "sender_id": user_id,
+                        "created_at": (
+                            user_message
+                            .created_at
+                            .isoformat()
+                        )
+                    }
+                )
+
+                print(
+                    f"User message saved: "
+                    f"from {user_id} to {session.recipient_id}"
+                )
+            else:
+                # AI-powered conversation
+                user_message, assistant_message = (
+                    await ChatService
+                    .process_message(
+                        db=db,
+                        session_id=session_id,
+                        message=message
+                    )
+                )
+
+                # Send assistant response
+                await websocket.send_json(
+                    {
+                        "type": "assistant_message",
+                        "session_id": session_id,
+                        "message_id": (
+                            assistant_message.id
+                        ),
+                        "content": (
+                            assistant_message.content
+                        ),
+                        "role": "assistant",
+                        "created_at": (
+                            assistant_message
+                            .created_at
+                            .isoformat()
+                        )
+                    }
+                )
+
+                # Stop typing indicator
+                await websocket.send_json(
+                    {
+                        "type": "typing",
+                        "content": False
+                    }
+                )
 
     except WebSocketDisconnect:
 

@@ -11,13 +11,15 @@ class ChatMessageRepository:
         db: Session,
         session_id: int,
         role: str,
-        content: str
+        content: str,
+        sender_id: int | None = None
     ) -> ChatMessage:
 
         message = ChatMessage(
             session_id=session_id,
             role=role,
-            content=content
+            content=content,
+            sender_id=sender_id
         )
 
         db.add(message)
