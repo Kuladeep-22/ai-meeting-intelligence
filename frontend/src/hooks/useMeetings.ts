@@ -14,7 +14,7 @@ export const useMeetings = () => {
       const response =
         await meetingApi.getMeetings();
 
-      setMeetings(response.data);
+      setMeetings(response);
     } catch (error) {
       console.error(error);
     }

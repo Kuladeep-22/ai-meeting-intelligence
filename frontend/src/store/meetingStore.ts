@@ -4,10 +4,11 @@ interface Meeting {
   id: number;
   title: string;
   description?: string;
-  meeting_date: string;
   start_time?: string;
   end_time?: string;
-  organizer: string;
+  status?: string;
+  organizer_id?: number;
+  meeting_code?: string;
 }
 
 interface MeetingStore {

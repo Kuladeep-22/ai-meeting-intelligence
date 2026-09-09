@@ -38,11 +38,12 @@ const Meetings = () => {
         meetings.map((meeting) => (
           <MeetingCard
             key={meeting.id}
+            id={meeting.id}
             title={meeting.title}
-            date={meeting.meeting_date}
+            date={meeting.start_time || new Date().toISOString().split('T')[0]}
             startTime={meeting.start_time}
             endTime={meeting.end_time}
-            organizer={meeting.organizer}
+            organizer={`Organizer #${meeting.organizer_id || 'Unknown'}`}
             onView={() => navigate(`/meetings/${meeting.id}`)}
             onDelete={() => setMeetingToDelete(meeting.id)}
           />

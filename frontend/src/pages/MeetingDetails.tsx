@@ -17,145 +17,295 @@ import TranscriptUploader from "../components/meetings/TranscriptUploader";
 import AudioUploader from "../components/meetings/AudioUploader";
 import MeetingTimeline from "../components/meetings/MeetingTimeline";
 import ChatWindow from "../components/chatbot/ChatWindow";
-import { meetingApi } from "../api/meetingApi";
-import { hasMeetingStarted, buildMeetingTimeline } from "../utils/meetingTime";
+
+import {
+  meetingApi,
+  Meeting,
+  RSVPStatus,
+} from "../api/meetingApi";
+
+import {
+  hasMeetingStarted,
+  buildMeetingTimeline,
+} from "../utils/meetingTime";
+
 import { useAuthStore } from "../store/authStore";
-
-interface Participant {
-  id: number;
-  user_id: number;
-  status: string;
-}
-
-interface MeetingDetail {
-  id: number;
-  title: string;
-  description?: string;
-  meeting_date: string;
-  start_time?: string;
-  end_time?: string;
-  organizer: string;
-  join_url?: string;
-  participants?: Participant[];
-}
 
 const MeetingDetails = () => {
   const { id } = useParams();
-  const [meeting, setMeeting] = useState<MeetingDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
 
-  const currentUser = useAuthStore((state) => state.user);
+  const [meeting, setMeeting] =
+    useState<Meeting | null>(null);
 
-  const loadMeeting = () => {
-    if (!id) return;
+  const [loading, setLoading] =
+    useState(true);
 
-    meetingApi
-      .getMeetingById(Number(id))
-      .then((response) => setMeeting(response.data))
-      .catch(() => setNotFound(true))
-      .finally(() => setLoading(false));
+  const [notFound, setNotFound] =
+    useState(false);
+
+  const [rsvpSubmitting, setRsvpSubmitting] =
+    useState(false);
+
+  const currentUser = useAuthStore(
+    (state) => state.user
+  );
+
+  // ==================================================
+  // LOAD MEETING
+  // ==================================================
+
+  const loadMeeting = async () => {
+    if (!id) {
+      setNotFound(true);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setNotFound(false);
+
+      const response =
+        await meetingApi.getMeeting(
+          Number(id)
+        );
+
+      setMeeting(response);
+    } catch (error) {
+      console.error(
+        "Failed to load meeting:",
+        error
+      );
+
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadMeeting();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const myParticipant = meeting?.participants?.find(
-    (p) => p.user_id === currentUser?.id
-  );
+  // ==================================================
+  // CURRENT USER PARTICIPANT
+  // ==================================================
 
-  const handleRsvp = async (status: "accepted" | "declined" | "tentative") => {
-    if (!meeting) return;
+  const myParticipant =
+    meeting?.participants?.find(
+      (participant) =>
+        participant.user_id === currentUser?.id
+    );
+
+  // ==================================================
+  // RSVP
+  // ==================================================
+
+  const handleRsvp = async (
+    status: RSVPStatus
+  ) => {
+    if (!meeting) {
+      return;
+    }
 
     setRsvpSubmitting(true);
 
     try {
-      await meetingApi.rsvp(meeting.id, status);
-      loadMeeting();
+      await meetingApi.rsvp(
+        meeting.id,
+        status
+      );
+
+      await loadMeeting();
+    } catch (error) {
+      console.error(
+        "RSVP failed:",
+        error
+      );
     } finally {
       setRsvpSubmitting(false);
     }
   };
 
+  // ==================================================
+  // LOADING
+  // ==================================================
+
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={5}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        mt={5}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
+  // ==================================================
+  // NOT FOUND
+  // ==================================================
+
   if (notFound || !meeting) {
     return (
       <Typography color="text.secondary">
-        This meeting was not found. It may have been automatically removed
-        after its scheduled date passed.
+        This meeting was not found. It may have
+        been automatically removed after its
+        scheduled date passed.
       </Typography>
     );
   }
 
-  const started = hasMeetingStarted(meeting.meeting_date, meeting.start_time);
+  // ==================================================
+  // MEETING STATUS
+  // ==================================================
+
+  const started = hasMeetingStarted(
+    meeting.meeting_date || "",
+    meeting.start_time
+  );
+
+  // ==================================================
+  // TIMELINE
+  // ==================================================
+
+  const timelineEvents =
+    buildMeetingTimeline(
+      meeting.start_time,
+      meeting.end_time
+    ).map((event) => ({
+      time: event.time,
+      title: event.event,
+    }));
+
+  // ==================================================
+  // UI
+  // ==================================================
 
   return (
     <>
+      {/* ============================================
+          MEETING INFORMATION
+      ============================================ */}
+
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h5">{meeting.title}</Typography>
-
-        <Typography color="text.secondary">
-          {meeting.meeting_date}
-          {(meeting.start_time || meeting.end_time) &&
-            ` • ${meeting.start_time || "?"} - ${meeting.end_time || "?"}`}
+        <Typography variant="h5">
+          {meeting.title}
         </Typography>
 
-        <Typography color="text.secondary">
-          Organizer: {meeting.organizer}
+        {meeting.description && (
+          <Typography
+            color="text.secondary"
+            sx={{ mt: 1 }}
+          >
+            {meeting.description}
+          </Typography>
+        )}
+
+        <Typography
+          color="text.secondary"
+          sx={{ mt: 1 }}
+        >
+          {meeting.meeting_date || "Date not available"}
+
+          {(meeting.start_time ||
+            meeting.end_time) &&
+            ` • ${
+              meeting.start_time || "?"
+            } - ${
+              meeting.end_time || "?"
+            }`}
         </Typography>
+
+        <Typography
+          color="text.secondary"
+          sx={{ mt: 0.5 }}
+        >
+          Organizer:{" "}
+          {meeting.organizer || "Unknown"}
+        </Typography>
+
+        {/* ==========================================
+            JOIN MEETING
+        ========================================== */}
 
         {meeting.join_url && (
-          <Box mt={1}>
+          <Box mt={2}>
             <Button
               variant="outlined"
               size="small"
               href={meeting.join_url}
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
             >
               Join Meeting
             </Button>
           </Box>
         )}
 
+        {/* ==========================================
+            RSVP
+        ========================================== */}
+
         {myParticipant && (
           <Box mt={2}>
-            <Typography variant="subtitle2">Your response:</Typography>
-            <Stack direction="row" spacing={1} mt={1}>
+            <Typography variant="subtitle2">
+              Your response:
+            </Typography>
+
+            <Stack
+              direction="row"
+              spacing={1}
+              mt={1}
+            >
+              {/* ACCEPT */}
+
               <Chip
                 label="Accept"
                 color={
-                  myParticipant.status === "accepted" ? "success" : "default"
+                  myParticipant.status ===
+                  "accepted"
+                    ? "success"
+                    : "default"
                 }
-                onClick={() => handleRsvp("accepted")}
+                onClick={() =>
+                  handleRsvp("accepted")
+                }
                 disabled={rsvpSubmitting}
                 clickable
               />
+
+              {/* TENTATIVE */}
+
               <Chip
                 label="Tentative"
                 color={
-                  myParticipant.status === "tentative" ? "warning" : "default"
+                  myParticipant.status ===
+                  "tentative"
+                    ? "warning"
+                    : "default"
                 }
-                onClick={() => handleRsvp("tentative")}
+                onClick={() =>
+                  handleRsvp("tentative")
+                }
                 disabled={rsvpSubmitting}
                 clickable
               />
+
+              {/* DECLINE */}
+
               <Chip
                 label="Decline"
                 color={
-                  myParticipant.status === "declined" ? "error" : "default"
+                  myParticipant.status ===
+                  "declined"
+                    ? "error"
+                    : "default"
                 }
-                onClick={() => handleRsvp("declined")}
+                onClick={() =>
+                  handleRsvp("declined")
+                }
                 disabled={rsvpSubmitting}
                 clickable
               />
@@ -163,48 +313,85 @@ const MeetingDetails = () => {
           </Box>
         )}
 
-        {meeting.participants && meeting.participants.length > 0 && (
-          <Box mt={2}>
-            <Typography variant="subtitle2">Participants</Typography>
-            <List dense>
-              {meeting.participants.map((p) => (
-                <ListItem key={p.id} disableGutters>
-                  <ListItemText
-                    primary={`User #${p.user_id}`}
-                    secondary={p.status}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-        )}
+        {/* ==========================================
+            PARTICIPANTS
+        ========================================== */}
+
+        {meeting.participants &&
+          meeting.participants.length > 0 && (
+            <Box mt={2}>
+              <Typography variant="subtitle2">
+                Participants
+              </Typography>
+
+              <List dense>
+                {meeting.participants.map(
+                  (participant) => (
+                    <ListItem
+                      key={participant.id}
+                      disableGutters
+                    >
+                      <ListItemText
+                        primary={`User #${participant.user_id}`}
+                        secondary={
+                          participant.status
+                        }
+                      />
+                    </ListItem>
+                  )
+                )}
+              </List>
+            </Box>
+          )}
       </Paper>
+
+      {/* ============================================
+          TRANSCRIPT / AUDIO
+      ============================================ */}
 
       {started ? (
         <>
-          <TranscriptUploader meetingId={meeting.id} />
+          <TranscriptUploader
+            meetingId={meeting.id}
+          />
 
           <br />
 
-          <AudioUploader meetingId={meeting.id} />
+          <AudioUploader
+            meetingId={meeting.id}
+          />
         </>
       ) : (
         <Paper sx={{ p: 3, mb: 3 }}>
           <Typography color="text.secondary">
-            Transcript and audio uploads will open once the meeting starts
-            {meeting.start_time ? ` at ${meeting.start_time}` : ""} on{" "}
-            {meeting.meeting_date}.
+            Transcript and audio uploads will
+            open once the meeting starts
+            {meeting.start_time
+              ? ` at ${meeting.start_time}`
+              : ""}{" "}
+            on{" "}
+            {meeting.meeting_date ||
+              "the scheduled date"}
+            .
           </Typography>
         </Paper>
       )}
 
       <br />
 
+      {/* ============================================
+          TIMELINE
+      ============================================ */}
+
       <MeetingTimeline
-        events={buildMeetingTimeline(meeting.start_time, meeting.end_time)}
+        events={timelineEvents}
       />
 
       <br />
+
+      {/* ============================================
+          CHAT
+      ============================================ */}
 
       <ChatWindow />
     </>
