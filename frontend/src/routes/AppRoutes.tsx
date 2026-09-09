@@ -17,6 +17,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 
+import MeetingRoom from "../pages/MeetingRoom";
+
 const AppRoutes = () => {
   return (
       <Routes>
@@ -159,6 +161,17 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <Chats />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/meeting-room/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <MeetingRoom />
               </MainLayout>
             </ProtectedRoute>
           }

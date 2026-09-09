@@ -1,40 +1,56 @@
 import {
-  Paper,
+  Box,
   Typography,
-  List,
-  ListItem,
-  ListItemText,
+  Paper,
 } from "@mui/material";
 
-import { TimelineEvent, buildMeetingTimeline } from "../../utils/meetingTime";
-
-const defaultEvents: TimelineEvent[] = buildMeetingTimeline("10:00", "11:00");
-
 interface MeetingTimelineProps {
-  events?: TimelineEvent[];
+  events?: {
+    time: string;
+    title: string;
+    description?: string;
+  }[];
 }
 
-const MeetingTimeline = ({ events = defaultEvents }: MeetingTimelineProps) => {
+const MeetingTimeline = ({
+  events = [],
+}: MeetingTimelineProps) => {
   return (
-    <Paper sx={{ p: 3 }}>
-      <Typography
-        variant="h6"
-        gutterBottom
-      >
+    <Box>
+      <Typography variant="h6" mb={2}>
         Meeting Timeline
       </Typography>
 
-      <List>
-        {events.map((item) => (
-          <ListItem key={`${item.time}-${item.event}`}>
-            <ListItemText
-              primary={item.event}
-              secondary={item.time}
-            />
-          </ListItem>
-        ))}
-      </List>
-    </Paper>
+      {events.length === 0 && (
+        <Typography color="text.secondary">
+          No timeline events available.
+        </Typography>
+      )}
+
+      {events.map((event, index) => (
+        <Paper
+          key={index}
+          sx={{
+            p: 2,
+            mb: 2,
+          }}
+        >
+          <Typography variant="subtitle1">
+            {event.title}
+          </Typography>
+
+          <Typography variant="caption">
+            {event.time}
+          </Typography>
+
+          {event.description && (
+            <Typography color="text.secondary">
+              {event.description}
+            </Typography>
+          )}
+        </Paper>
+      ))}
+    </Box>
   );
 };
 

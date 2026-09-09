@@ -4,65 +4,57 @@ import {
   Typography,
   Button,
   Stack,
-  IconButton,
+  Chip,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 
 interface MeetingCardProps {
-  title: string;
-  date: string;
-  startTime?: string;
-  endTime?: string;
-  organizer: string;
-  onView: () => void;
-  onDelete?: () => void;
+  meeting: {
+    id: number;
+    title: string;
+    description?: string;
+    start_time?: string;
+    status?: string;
+  };
 }
 
-const MeetingCard = ({
-  title,
-  date,
-  startTime,
-  endTime,
-  organizer,
-  onView,
-  onDelete,
-}: MeetingCardProps) => {
+const MeetingCard = ({ meeting }: MeetingCardProps) => {
+  const navigate = useNavigate();
+
+  const handleJoin = () => {
+    navigate(`/meetings/${meeting.id}/room`);
+  };
+
   return (
-    <Card sx={{ mb: 2 }}>
+    <Card>
       <CardContent>
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+        <Stack spacing={2}>
           <Typography variant="h6">
-            {title}
+            {meeting.title}
           </Typography>
 
-          {onDelete && (
-            <IconButton
-              aria-label="Delete meeting"
-              color="error"
-              size="small"
-              onClick={onDelete}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
+          {meeting.description && (
+            <Typography color="text.secondary">
+              {meeting.description}
+            </Typography>
           )}
-        </Stack>
 
-        <Typography color="text.secondary">
-          Date: {date}
-          {(startTime || endTime) &&
-            ` • ${startTime || "?"} - ${endTime || "?"}`}
-        </Typography>
+          {meeting.start_time && (
+            <Typography>
+              {new Date(meeting.start_time).toLocaleString()}
+            </Typography>
+          )}
 
-        <Typography color="text.secondary">
-          Organizer: {organizer}
-        </Typography>
+          <Chip
+            label={meeting.status || "scheduled"}
+            size="small"
+          />
 
-        <Stack direction="row" mt={2}>
           <Button
             variant="contained"
-            onClick={onView}
+            onClick={handleJoin}
           >
-            View Details
+            Join Meeting
           </Button>
         </Stack>
       </CardContent>

@@ -1,157 +1,102 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
+  Box,
   TextField,
   Button,
-  Paper,
   Stack,
-  Alert,
-  Autocomplete,
 } from "@mui/material";
+import {
+  createMeeting,
+  CreateMeetingData,
+} from "../../api/meetingApi";
 
-import { meetingApi } from "../../api/meetingApi";
-import { usersApi, UserOption } from "../../api/usersApi";
-import { useMeetingStore } from "../../store/meetingStore";
-import { useAuthStore } from "../../store/authStore";
-
-interface Props {
-  onCreated?: () => void;
+interface MeetingFormProps {
+  onCreated?: (meeting: any) => void;
 }
 
-const MeetingForm = ({ onCreated }: Props) => {
+const MeetingForm = ({ onCreated }: MeetingFormProps) => {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [organizer, setOrganizer] = useState("");
-  const [users, setUsers] = useState<UserOption[]>([]);
-  const [participants, setParticipants] = useState<UserOption[]>([]);
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
-  const addMeeting = useMeetingStore((state) => state.addMeeting);
-  const currentUser = useAuthStore((state) => state.user);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    usersApi
-      .getUsers()
-      .then((res) =>
-        setUsers(res.data.filter((u) => u.id !== currentUser?.id))
-      )
-      .catch(() => setUsers([]));
-  }, [currentUser?.id]);
-
-  const handleSubmit = async () => {
-    setError("");
-
-    if (!title.trim() || !date || !organizer.trim()) {
-      setError("Title, date, and organizer are required.");
-      return;
-    }
-
-    setSubmitting(true);
+  const handleSubmit = async (
+    event: React.FormEvent
+  ) => {
+    event.preventDefault();
 
     try {
-      const response = await meetingApi.createMeeting({
-        title: title.trim(),
-        meeting_date: date,
-        start_time: startTime || undefined,
-        end_time: endTime || undefined,
-        organizer: organizer.trim(),
-        participant_ids: participants.map((p) => p.id),
-      });
+      setLoading(true);
 
-      addMeeting(response.data);
+      const data: CreateMeetingData = {
+        title,
+        description,
+        start_time: startTime,
+        end_time: endTime,
+      };
+
+      const meeting = await createMeeting(data);
+
+      onCreated?.(meeting);
 
       setTitle("");
-      setDate("");
+      setDescription("");
       setStartTime("");
       setEndTime("");
-      setOrganizer("");
-      setParticipants([]);
-
-      onCreated?.();
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.detail ||
-          "Failed to create meeting. Please try again."
-      );
+    } catch (error) {
+      console.error("Failed to create meeting", error);
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
+    <Box component="form" onSubmit={handleSubmit}>
       <Stack spacing={2}>
-        {error && <Alert severity="error">{error}</Alert>}
-
         <TextField
           label="Meeting Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          disabled={submitting}
+          required
         />
 
         <TextField
-          label="Date"
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          disabled={submitting}
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          multiline
+          rows={3}
+        />
+
+        <TextField
+          label="Start Time"
+          type="datetime-local"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
           InputLabelProps={{ shrink: true }}
+          required
         />
-
-        <Stack direction="row" spacing={2}>
-          <TextField
-            label="Start Time"
-            type="time"
-            fullWidth
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            disabled={submitting}
-            InputLabelProps={{ shrink: true }}
-          />
-
-          <TextField
-            label="End Time"
-            type="time"
-            fullWidth
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            disabled={submitting}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Stack>
 
         <TextField
-          label="Organizer"
-          value={organizer}
-          onChange={(e) => setOrganizer(e.target.value)}
-          disabled={submitting}
-        />
-
-        <Autocomplete
-          multiple
-          options={users}
-          value={participants}
-          onChange={(_, value) => setParticipants(value)}
-          getOptionLabel={(option) => `${option.full_name} (${option.email})`}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          disabled={submitting}
-          renderInput={(params) => (
-            <TextField {...params} label="Add Participants" placeholder="Select users" />
-          )}
+          label="End Time"
+          type="datetime-local"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          required
         />
 
         <Button
+          type="submit"
           variant="contained"
-          onClick={handleSubmit}
-          disabled={submitting}
+          disabled={loading}
         >
-          {submitting ? "Creating..." : "Create Meeting"}
+          {loading ? "Creating..." : "Create Meeting"}
         </Button>
       </Stack>
-    </Paper>
+    </Box>
   );
 };
 

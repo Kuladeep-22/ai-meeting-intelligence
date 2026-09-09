@@ -1,41 +1,76 @@
-import api from "./axios";
+import axios from "axios";
 
-export const meetingApi = {
-  getMeetings: () =>
-    api.get("/meetings"),
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
-  getMyMeetings: () =>
-    api.get("/meetings/mine"),
+const api = axios.create({
+  baseURL: API_URL,
+});
 
-  getMeetingById: (id: number) =>
-    api.get(`/meetings/${id}`),
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
 
-  createMeeting: (data: any) =>
-    api.post("/meetings", data),
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-  updateMeeting: (id: number, data: any) =>
-    api.put(`/meetings/${id}`, data),
+  return config;
+});
 
-  rsvp: (id: number, status: "accepted" | "declined" | "tentative") =>
-    api.patch(`/meetings/${id}/rsvp`, { status }),
+export interface Meeting {
+  id: number;
+  title: string;
+  description?: string;
+  start_time?: string;
+  end_time?: string;
+  status?: string;
+  organizer_id?: number;
+  meeting_code?: string;
+}
 
-  deleteMeeting: (id: number) =>
-    api.delete(`/meetings/${id}`),
+export interface CreateMeetingData {
+  title: string;
+  description?: string;
+  start_time: string;
+  end_time: string;
+}
 
-  uploadTranscript: (id: number, formData: FormData) =>
-    api.post(`/meetings/${id}/transcript`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
+export const getMeetings = async (): Promise<Meeting[]> => {
+  const response = await api.get("/meetings");
+  return response.data;
+};
 
-  uploadAudio: (id: number, formData: FormData) =>
-    api.post(`/meetings/${id}/audio`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
+export const getMeeting = async (meetingId: number): Promise<Meeting> => {
+  const response = await api.get(`/meetings/${meetingId}`);
+  return response.data;
+};
 
-  analyzeMeeting: (id: number) =>
-    api.post(`/meetings/${id}/analyze`),
+export const createMeeting = async (
+  data: CreateMeetingData
+): Promise<Meeting> => {
+  const response = await api.post("/meetings", data);
+  return response.data;
+};
+
+export const updateMeeting = async (
+  meetingId: number,
+  data: Partial<CreateMeetingData>
+): Promise<Meeting> => {
+  const response = await api.put(`/meetings/${meetingId}`, data);
+  return response.data;
+};
+
+export const deleteMeeting = async (meetingId: number) => {
+  const response = await api.delete(`/meetings/${meetingId}`);
+  return response.data;
+};
+
+export const startMeeting = async (meetingId: number) => {
+  const response = await api.post(`/meetings/${meetingId}/start`);
+  return response.data;
+};
+
+export const endMeeting = async (meetingId: number) => {
+  const response = await api.post(`/meetings/${meetingId}/end`);
+  return response.data;
 };
