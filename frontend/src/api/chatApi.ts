@@ -24,6 +24,7 @@ api.interceptors.request.use((config) => {
 export interface ChatSession {
   id: number;
   title: string;
+  recipient_id?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -31,6 +32,7 @@ export interface ChatSession {
 export interface ChatMessage {
   id?: number;
   session_id: number;
+  sender_id?: number;
   role: "user" | "assistant";
   content: string;
   created_at?: string;
@@ -49,11 +51,18 @@ export const getChatSessions = async (): Promise<ChatSession[]> => {
 
 // Create a new chat session
 export const createChatSession = async (
-  title = "New Chat"
+  title = "New Chat",
+  recipientId?: number
 ): Promise<ChatSession> => {
-  const response = await api.post("/chatbot/sessions", {
+  const payload: any = {
     title,
-  });
+  };
+
+  if (recipientId) {
+    payload.recipient_id = recipientId;
+  }
+
+  const response = await api.post("/chatbot/sessions", payload);
 
   return response.data;
 };

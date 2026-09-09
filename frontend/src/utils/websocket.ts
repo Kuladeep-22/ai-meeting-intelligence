@@ -1,9 +1,11 @@
 export interface WebSocketMessage {
   type: string;
   session_id?: number;
+  message_id?: number;
   message?: string;
   content?: string;
   role?: "user" | "assistant";
+  sender_id?: number;
 }
 
 export class ChatWebSocket {
@@ -16,8 +18,18 @@ export class ChatWebSocket {
       import.meta.env.VITE_WS_URL ||
       "ws://localhost:8000";
 
-    this.url =
+    const token = localStorage.getItem(
+      "access_token"
+    );
+
+    let urlWithParams =
       `${wsUrl}/api/v1/chatbot/ws/${sessionId}`;
+
+    if (token) {
+      urlWithParams += `?token=${encodeURIComponent(token)}`;
+    }
+
+    this.url = urlWithParams;
   }
 
   connect(

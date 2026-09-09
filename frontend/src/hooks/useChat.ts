@@ -17,6 +17,8 @@ import {
   useChatStore,
 } from "../store/chatStore";
 
+import { useAuthStore } from "../store/authStore";
+
 import {
   ChatWebSocket,
   WebSocketMessage,
@@ -118,6 +120,7 @@ export const useChat = () => {
           ) {
             const assistantMessage: ChatMessage =
               {
+                id: data.message_id,
                 session_id: sessionId,
                 role: "assistant",
                 content:
@@ -138,7 +141,9 @@ export const useChat = () => {
           ) {
             const incomingMessage: ChatMessage =
               {
+                id: data.message_id,
                 session_id: sessionId,
+                sender_id: data.sender_id,
                 role:
                   data.role ===
                   "assistant"
@@ -240,7 +245,8 @@ export const useChat = () => {
         try {
           const session =
             await createChatSession(
-              `Chat with ${user.full_name}`
+              `Chat with ${user.full_name}`,
+              user.id
             );
 
           setSessions([
@@ -256,6 +262,10 @@ export const useChat = () => {
 
           connectWebSocket(
             session.id
+          );
+
+          console.log(
+            `Created chat with user: ${user.full_name} (ID: ${user.id})`
           );
         } catch (error) {
           console.error(
@@ -276,6 +286,9 @@ export const useChat = () => {
   // Send message
   const sendMessage = useCallback(
     (message: string) => {
+      const currentUser =
+        useAuthStore.getState().user;
+
       if (
         !activeSessionId ||
         !websocketRef.current
@@ -290,6 +303,8 @@ export const useChat = () => {
       const userMessage: ChatMessage = {
         session_id:
           activeSessionId,
+        sender_id:
+          currentUser?.id,
         role: "user",
         content: message,
       };

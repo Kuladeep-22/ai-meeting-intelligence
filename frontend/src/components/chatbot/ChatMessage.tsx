@@ -7,13 +7,26 @@ import {
 interface ChatMessageProps {
   sender: "user" | "bot";
   message: string;
+  senderId?: number;
+  currentUserId?: number;
+  senderName?: string;
 }
 
 const ChatMessage = ({
   sender,
   message,
+  senderId,
+  currentUserId,
+  senderName,
 }: ChatMessageProps) => {
-  const isUser = sender === "user";
+  // For user-to-user messaging, check sender_id
+  // For AI messaging, use sender prop
+  const isCurrentUser =
+    senderId !== undefined && currentUserId !== undefined
+      ? senderId === currentUserId
+      : sender === "user";
+
+  const isUser = isCurrentUser;
 
   return (
     <Box
@@ -25,18 +38,44 @@ const ChatMessage = ({
         marginBottom: 2,
       }}
     >
-      <Paper
-        elevation={1}
+      <Box
         sx={{
-          padding: 1.5,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: isUser ? "flex-end" : "flex-start",
           maxWidth: "70%",
-          borderRadius: 2,
         }}
       >
-        <Typography variant="body1">
-          {message}
-        </Typography>
-      </Paper>
+        {senderName && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mb: 0.5 }}
+          >
+            {senderName}
+          </Typography>
+        )}
+
+        <Paper
+          elevation={1}
+          sx={{
+            padding: 1.5,
+            borderRadius: 2,
+            backgroundColor: isUser
+              ? "#1976d2"
+              : "#f5f5f5",
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              color: isUser ? "white" : "black",
+            }}
+          >
+            {message}
+          </Typography>
+        </Paper>
+      </Box>
     </Box>
   );
 };
