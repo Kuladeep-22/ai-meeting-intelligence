@@ -1,21 +1,20 @@
 import os
 
-from dotenv import load_dotenv
 from groq import Groq
-
-
-load_dotenv()
 
 
 class LLMClient:
 
     def __init__(self):
 
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = os.getenv(
+            "GROQ_API_KEY"
+        )
 
         if not api_key:
-            raise RuntimeError(
-                "GROQ_API_KEY is not configured"
+
+            raise ValueError(
+                "GROQ_API_KEY is not configured."
             )
 
         self.client = Groq(
@@ -24,23 +23,25 @@ class LLMClient:
 
         self.model = os.getenv(
             "GROQ_MODEL",
-            "llama-3.3-70b-versatile"
+            "llama-3.1-8b-instant"
         )
 
-    def generate(self, prompt: str):
+    async def generate(
+        self,
+        messages: list[dict[str, str]]
+    ) -> str:
 
         response = self.client.chat.completions.create(
             model=self.model,
-
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-
-            temperature=0.3,
-            max_tokens=800
+            messages=messages,
+            temperature=0.2,
+            max_tokens=1000
         )
 
-        return response.choices[0].message.content
+        return (
+            response
+            .choices[0]
+            .message
+            .content
+            .strip()
+        )

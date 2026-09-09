@@ -16,7 +16,7 @@ from app.api.risks.routes import router as risk_router
 from app.api.analytics.routes import router as analytics_router
 from app.api.notifications.routes import router as notification_router
 from app.api.chatbot.routes import router as chatbot_router
-
+from app.websocket.chat_socket import router as chat_socket_router
 
 # ============================================================
 # CONFIGURATION
@@ -148,6 +148,39 @@ app.include_router(
 
 # ============================================================
 # ANALYTICS
+# ============================================================
+
+app.include_router(
+    analytics_router,
+    prefix=API_PREFIX,
+)
+
+# ============================================================
+# NOTIFICATIONS
+# ============================================================
+
+app.include_router(
+    notification_router,
+    prefix=API_PREFIX,
+)
+
+# ============================================================
+# CHATBOT
+# ============================================================
+
+app.include_router(
+    chatbot_router,
+    prefix=API_PREFIX,
+)
+
+# ============================================================
+# CHAT SOCKET
+# ============================================================
+
+app.include_router(
+    chat_socket_router,
+    prefix=API_PREFIX,
+)
 # ============================================================
 
 app.include_router(

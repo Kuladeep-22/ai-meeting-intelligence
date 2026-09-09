@@ -1,87 +1,93 @@
-import os
+from typing import Any
 
-from flask import Blueprint, request, jsonify
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 
-from app.vectorstore.retrieval import retrieval_service
-from app.models.llm_client import LLMClient
+from app.services.chat_service import ChatService
 
-chatbot_bp = Blueprint(
-    "chatbot",
-    __name__,
+
+router = APIRouter(
+    prefix="/chat",
+    tags=["Chatbot"]
 )
 
-_prompt_path = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "prompts",
-    "chatbot_prompt.txt",
-)
 
-with open(_prompt_path, "r", encoding="utf-8") as f:
-    CHATBOT_PROMPT = f.read()
-
-_llm_client = None
+class ConversationMessage(BaseModel):
+    role: str
+    content: str
 
 
-def _get_llm_client():
-    global _llm_client
-
-    if _llm_client is None and os.getenv("GROQ_API_KEY"):
-        _llm_client = LLMClient()
-
-    return _llm_client
-
-
-@chatbot_bp.route(
-    "/chat",
-    methods=["POST"],
-)
-def chatbot():
-
-    data = request.get_json()
-
-    question = data.get(
-        "question",
-        ""
+class ChatRequest(BaseModel):
+    message: str = Field(
+        ...,
+        min_length=1,
+        max_length=5000
     )
 
-    if not question:
-        return jsonify({
-            "answer": "Please ask a question."
-        }), 400
+    session_id: int | None = None
+
+    conversation: list[ConversationMessage] = Field(
+        default_factory=list
+    )
+
+
+class ChatResponse(BaseModel):
+    response: str
+    session_id: int | None = None
+
+
+@router.post(
+    "",
+    response_model=ChatResponse
+)
+async def chat(request: ChatRequest) -> ChatResponse:
+    """
+    Process a chat message.
+
+    Receives:
+    - Current user message
+    - Session ID
+    - Previous conversation history
+
+    Returns:
+    - AI-generated response
+    """
 
     try:
-        results = retrieval_service.retrieve(question, top_k=3)
-        documents = results.get("documents", [[]])[0]
-    except Exception:
-        documents = []
 
-    context = "\n".join(f"- {doc}" for doc in documents)
+        conversation = [
+            {
+                "role": message.role,
+                "content": message.content
+            }
+            for message in request.conversation
+        ]
 
-    llm_client = _get_llm_client()
-
-    if llm_client and documents:
-        try:
-            prompt = CHATBOT_PROMPT.format(
-                context=context,
-                question=question,
-            )
-
-            answer = llm_client.generate(prompt)
-        except Exception as e:
-            answer = f"AI Service Error: {str(e)}"
-    elif documents:
-        answer = (
-            "Based on your meeting records, here's what I found:\n"
-            f"{context}"
-        )
-    else:
-        answer = (
-            f"You asked: '{question}'. No relevant meeting content has been "
-            "indexed yet, so I can't ground this answer in your data."
+        response = await ChatService.generate_response(
+            message=request.message,
+            conversation=conversation,
+            session_id=request.session_id
         )
 
-    return jsonify({
-        "answer": answer,
-        "sources": documents,
-    })
+        return ChatResponse(
+            response=response,
+            session_id=request.session_id
+        )
+
+    except ValueError as exc:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc)
+        )
+
+    except Exception as exc:
+
+        print(
+            f"Chatbot error: {exc}"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate AI response."
+        )
