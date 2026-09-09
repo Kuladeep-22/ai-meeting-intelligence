@@ -17,6 +17,10 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// ==================================================
+// TYPES
+// ==================================================
+
 export interface Meeting {
   id: number;
   title: string;
@@ -35,12 +39,18 @@ export interface CreateMeetingData {
   end_time: string;
 }
 
+// ==================================================
+// API FUNCTIONS
+// ==================================================
+
 export const getMeetings = async (): Promise<Meeting[]> => {
   const response = await api.get("/meetings");
   return response.data;
 };
 
-export const getMeeting = async (meetingId: number): Promise<Meeting> => {
+export const getMeeting = async (
+  meetingId: number
+): Promise<Meeting> => {
   const response = await api.get(`/meetings/${meetingId}`);
   return response.data;
 };
@@ -56,21 +66,56 @@ export const updateMeeting = async (
   meetingId: number,
   data: Partial<CreateMeetingData>
 ): Promise<Meeting> => {
-  const response = await api.put(`/meetings/${meetingId}`, data);
+  const response = await api.put(
+    `/meetings/${meetingId}`,
+    data
+  );
+
   return response.data;
 };
 
-export const deleteMeeting = async (meetingId: number) => {
-  const response = await api.delete(`/meetings/${meetingId}`);
+export const deleteMeeting = async (
+  meetingId: number
+) => {
+  const response = await api.delete(
+    `/meetings/${meetingId}`
+  );
+
   return response.data;
 };
 
-export const startMeeting = async (meetingId: number) => {
-  const response = await api.post(`/meetings/${meetingId}/start`);
+export const startMeeting = async (
+  meetingId: number
+) => {
+  const response = await api.post(
+    `/meetings/${meetingId}/start`
+  );
+
   return response.data;
 };
 
-export const endMeeting = async (meetingId: number) => {
-  const response = await api.post(`/meetings/${meetingId}/end`);
+export const endMeeting = async (
+  meetingId: number
+) => {
+  const response = await api.post(
+    `/meetings/${meetingId}/end`
+  );
+
   return response.data;
 };
+
+// ==================================================
+// MEETING API OBJECT
+// ==================================================
+
+export const meetingApi = {
+  getMeetings,
+  getMeeting,
+  createMeeting,
+  updateMeeting,
+  deleteMeeting,
+  startMeeting,
+  endMeeting,
+};
+
+export default meetingApi;

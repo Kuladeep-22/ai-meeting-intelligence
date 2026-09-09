@@ -9,20 +9,30 @@ import {
 import { useNavigate } from "react-router-dom";
 
 interface MeetingCardProps {
-  meeting: {
-    id: number;
-    title: string;
-    description?: string;
-    start_time?: string;
-    status?: string;
-  };
+  id: number;
+  title: string;
+  date: string;
+  startTime?: string;
+  endTime?: string;
+  organizer: string;
+  onView?: () => void | Promise<void>;
+  onDelete?: () => void;
 }
 
-const MeetingCard = ({ meeting }: MeetingCardProps) => {
+const MeetingCard = ({
+  id,
+  title,
+  date,
+  startTime,
+  endTime,
+  organizer,
+  onView,
+  onDelete,
+}: MeetingCardProps) => {
   const navigate = useNavigate();
 
   const handleJoinMeeting = () => {
-    navigate(`/meetings/${meeting.id}/room`);
+    navigate(`/meetings/${id}/room`);
   };
 
   return (
@@ -30,32 +40,64 @@ const MeetingCard = ({ meeting }: MeetingCardProps) => {
       <CardContent>
         <Stack spacing={2}>
           <Typography variant="h6">
-            {meeting.title}
+            {title}
           </Typography>
 
-          {meeting.description && (
-            <Typography color="text.secondary">
-              {meeting.description}
+          <Typography color="text.secondary">
+            Date: {date}
+          </Typography>
+
+          {startTime && (
+            <Typography>
+              Start Time: {startTime}
             </Typography>
           )}
 
-          {meeting.start_time && (
+          {endTime && (
             <Typography>
-              {new Date(meeting.start_time).toLocaleString()}
+              End Time: {endTime}
             </Typography>
           )}
+
+          <Typography>
+            Organizer: {organizer}
+          </Typography>
 
           <Chip
-            label={meeting.status || "scheduled"}
+            label="Scheduled"
             size="small"
           />
 
-          <Button
-            variant="contained"
-            onClick={handleJoinMeeting}
+          <Stack
+            direction="row"
+            spacing={1}
           >
-            Join Meeting
-          </Button>
+            <Button
+              variant="contained"
+              onClick={handleJoinMeeting}
+            >
+              Join Meeting
+            </Button>
+
+            {onView && (
+              <Button
+                variant="outlined"
+                onClick={onView}
+              >
+                View
+              </Button>
+            )}
+
+            {onDelete && (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={onDelete}
+              >
+                Delete
+              </Button>
+            )}
+          </Stack>
         </Stack>
       </CardContent>
     </Card>
