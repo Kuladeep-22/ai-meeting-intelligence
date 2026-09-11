@@ -6,6 +6,7 @@ export interface WebSocketMessage {
   content?: string;
   role?: "user" | "assistant";
   sender_id?: number;
+  created_at?: string;
 }
 
 export class ChatWebSocket {

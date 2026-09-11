@@ -19,173 +19,271 @@ import AuthLayout from "../layouts/AuthLayout";
 
 import MeetingRoom from "../components/meetings/room/MeetingRoom";
 
-// Wrapper to pass meetingId to MeetingRoom
+// ============================================================
+// Meeting Room Wrapper
+// ============================================================
+
 const MeetingRoomWrapper = () => {
   const { id } = useParams<{ id: string }>();
-  return <MeetingRoom meetingId={id || ""} />;
+
+  if (!id) {
+    return <div>Invalid meeting ID</div>;
+  }
+
+  return (
+    <MeetingRoom
+      meetingId={id}
+      onLeave={() => {
+        window.location.href = "/meetings";
+      }}
+    />
+  );
 };
+
+
+// ============================================================
+// App Routes
+// ============================================================
 
 const AppRoutes = () => {
   return (
-      <Routes>
+    <Routes>
 
-        {/* Authentication */}
+      {/* ======================================================
+          AUTHENTICATION
+      ======================================================= */}
 
-        <Route
-          path="/login"
-          element={
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          }
-        />
+      <Route
+        path="/login"
+        element={
+          <AuthLayout>
+            <Login />
+          </AuthLayout>
+        }
+      />
 
-        <Route
-          path="/register"
-          element={
-            <AuthLayout>
-              <Register />
-            </AuthLayout>
-          }
-        />
+      <Route
+        path="/register"
+        element={
+          <AuthLayout>
+            <Register />
+          </AuthLayout>
+        }
+      />
 
-        {/* Protected Pages */}
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Chats />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      {/* ======================================================
+          MAIN PAGE
+      ======================================================= */}
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Dashboard />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Chats />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/meetings"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Meetings />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
 
-        <Route
-          path="/meetings/:id"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <MeetingDetails />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      {/* ======================================================
+          DASHBOARD
+      ======================================================= */}
 
-        <Route
-          path="/decisions"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Decisions />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/risks"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Risks />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
 
-        <Route
-          path="/analytics"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Analytics />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      {/* ======================================================
+          MEETINGS
+      ======================================================= */}
 
-        <Route
-          path="/teams"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <TeamManagement />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/meetings"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Meetings />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Settings />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
 
-        <Route
-          path="/assistant"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <AiAssistant />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      {/* ======================================================
+          MEETING DETAILS
+      ======================================================= */}
 
-        <Route
-          path="/chats"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Chats />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/meetings/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <MeetingDetails />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/meeting-room/:id"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <MeetingRoomWrapper />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+      {/* ======================================================
+          MEETING ROOM
+          
+          IMPORTANT:
+          MeetingCard navigates to:
+          
+          /meetings/:id/room
+          
+          So this route MUST use the same path.
+      ======================================================= */}
 
-      </Routes>
+      <Route
+        path="/meetings/:id/room"
+        element={
+          <ProtectedRoute>
+            <MeetingRoomWrapper />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          DECISIONS
+      ======================================================= */}
+
+      <Route
+        path="/decisions"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Decisions />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          RISKS
+      ======================================================= */}
+
+      <Route
+        path="/risks"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Risks />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          ANALYTICS
+      ======================================================= */}
+
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Analytics />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          TEAMS
+      ======================================================= */}
+
+      <Route
+        path="/teams"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <TeamManagement />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          SETTINGS
+      ======================================================= */}
+
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Settings />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          AI ASSISTANT
+      ======================================================= */}
+
+      <Route
+        path="/assistant"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <AiAssistant />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          CHATS
+      ======================================================= */}
+
+      <Route
+        path="/chats"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Chats />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* ======================================================
+          UNKNOWN ROUTES
+      ======================================================= */}
+
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to="/"
+            replace
+          />
+        }
+      />
+
+    </Routes>
   );
 };
 

@@ -153,6 +153,7 @@ export const useChat = () => {
                   data.content ||
                   data.message ||
                   "",
+                created_at: data.created_at,
               };
 
             addMessage(
@@ -208,10 +209,9 @@ export const useChat = () => {
         const session =
           await createChatSession();
 
-        setSessions([
-          session,
-          ...sessions,
-        ]);
+        const updatedSessions = await getChatSessions();
+
+        setSessions(updatedSessions);
 
         clearMessages();
 
@@ -219,9 +219,6 @@ export const useChat = () => {
           session.id
         );
 
-        connectWebSocket(
-          session.id
-        );
       } catch (error) {
         console.error(
           "Failed to create chat",
@@ -234,7 +231,6 @@ export const useChat = () => {
       setSessions,
       clearMessages,
       setActiveSession,
-      connectWebSocket,
     ]
   );
 
@@ -243,16 +239,26 @@ export const useChat = () => {
     useCallback(
       async (user: UserOption) => {
         try {
+          console.log(
+            "Opening chat with:",
+            user.full_name,
+            user.id
+          );
+
           const session =
             await createChatSession(
               `Chat with ${user.full_name}`,
               user.id
             );
 
-          setSessions([
-            session,
-            ...sessions,
-          ]);
+            console.log(
+              "Chat session:",
+              session
+            );
+
+            const updatedSessions = await getChatSessions();
+
+          setSessions(updatedSessions);
 
           clearMessages();
 
@@ -260,26 +266,20 @@ export const useChat = () => {
             session.id
           );
 
-          connectWebSocket(
-            session.id
-          );
-
           console.log(
-            `Created chat with user: ${user.full_name} (ID: ${user.id})`
+            `Opened chat with user: ${user.full_name} (ID: ${user.id})`
           );
         } catch (error) {
           console.error(
-            "Failed to create chat with user",
+            "Failed to create/open chat with user",
             error
           );
         }
       },
       [
-        sessions,
         setSessions,
         clearMessages,
         setActiveSession,
-        connectWebSocket,
       ]
     );
 
