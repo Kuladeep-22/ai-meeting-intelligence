@@ -116,6 +116,11 @@ const Register = () => {
           <MenuItem value="Manager">Manager</MenuItem>
           <MenuItem value="Team Lead">Team Lead</MenuItem>
           <MenuItem value="Member">Member</MenuItem>
+          <MenuItem value="Intern">Intern</MenuItem>
+          <MenuItem value="Consultant">Consultant</MenuItem>
+          <MenuItem value="Administrator">Administrator</MenuItem>
+          <MenuItem value="Guest">Guest</MenuItem>
+          <MenuItem value="Other">Other</MenuItem>
         </TextField>
 
         {/* Email */}
