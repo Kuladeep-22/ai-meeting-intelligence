@@ -130,7 +130,30 @@ def create_session(
         title=data.title,
         recipient_id=data.recipient_id,
     )
-    return session
+
+    recipient_name = None
+
+    if session.recipient_id is not None:
+
+        other_user_id = (
+            session.recipient_id
+            if session.user_id == current_user.id
+            else session.user_id
+        )
+
+        other_user = db.query(User).filter(User.id == other_user_id).first()
+
+        if other_user:
+            recipient_name = other_user.full_name
+
+    return {
+        "id": session.id,
+        "title": session.title,
+        "recipient_id": session.recipient_id,
+        "recipient_name": recipient_name,
+        "created_at": session.created_at.isoformat() if session.created_at else "",
+        "updated_at": session.updated_at.isoformat() if session.updated_at else "",
+    }
 
 
 @router.get("/sessions/{session_id}/messages")
