@@ -42,11 +42,6 @@ const Chat = () => {
     (s) => s.id === activeSessionId
   );
 
-  // Check if this is a 1-on-1 chat (has recipient_id)
-  const is1on1Chat =
-    currentSession?.recipient_id !== undefined &&
-    currentSession?.recipient_id !== null;
-
   // Extract other user's name from title for 1-on-1 chats
   // Title format: "Chat with [User Name]"
   const getOtherUserName = () => {
@@ -88,121 +83,120 @@ const Chat = () => {
           flexDirection: "column",
         }}
       >
-        <ChatHeader
-          title={
-            is1on1Chat
-              ? otherUserName || "Direct Message"
-              : "Select a user to start chatting"
-          }
-          subtitle={
-            is1on1Chat
-              ? undefined
-              : "Search for a user on the left to begin a conversation"
-          }
-        />
+        {!currentSession ? (
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography color="text.secondary">
+              Select a user on the left to start chatting
+            </Typography>
+          </Box>
+        ) : (
+          <>
+            <ChatHeader
+              title={
+                otherUserName || "Direct Message"
+              }
+            />
 
-        {/* Connection status */}
+            {/* Connection status */}
 
-        <Box sx={{ padding: 1 }}>
-          <Chip
-            size="small"
-            label={
-              isConnected
-                ? "Connected"
-                : "Disconnected"
-            }
-            color={
-              isConnected
-                ? "success"
-                : "default"
-            }
-          />
-        </Box>
+            <Box sx={{ padding: 1 }}>
+              <Chip
+                size="small"
+                label={
+                  isConnected
+                    ? "Connected"
+                    : "Disconnected"
+                }
+                color={
+                  isConnected
+                    ? "success"
+                    : "default"
+                }
+              />
+            </Box>
 
-        {/* Messages */}
+            {/* Messages */}
 
-        <Box
-          sx={{
-            flex: 1,
-            overflowY: "auto",
-            padding: 2,
-          }}
-        >
-          {messages.length === 0 ? (
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
+                flex: 1,
+                overflowY: "auto",
+                padding: 2,
               }}
             >
-              <Typography
-                color="text.secondary"
-              >
-                {is1on1Chat
-                  ? `Start a conversation with ${otherUserName}`
-                  : "Search for a user on the left to start chatting."}
-              </Typography>
+              {messages.length === 0 ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Typography
+                    color="text.secondary"
+                  >
+                    {`Start a conversation with ${otherUserName}`}
+                  </Typography>
+                </Box>
+              ) : (
+                messages.map(
+                  (message, index) => (
+                    <ChatMessage
+                      key={
+                        message.id ??
+                        `${message.role}-${index}`
+                      }
+                      sender={
+                        message.role === "assistant"
+                          ? "bot"
+                          : "user"
+                      }
+                      message={message.content}
+                      senderId={message.sender_id}
+                      currentUserId={currentUser?.id}
+                      senderName={
+                        message.sender_id !==
+                        currentUser?.id
+                          ? otherUserName
+                          : undefined
+                      }
+                    />
+                  )
+                )
+              )}
+
+              {isTyping && (
+                <TypingIndicator />
+              )}
             </Box>
-          ) : (
-            messages.map(
-              (message, index) => (
-                <ChatMessage
-                  key={
-                    message.id ??
-                    `${message.role}-${index}`
-                  }
-                  sender={
-                    message.role === "assistant"
-                      ? "bot"
-                      : "user"
-                  }
-                  message={message.content}
-                  senderId={
-                    is1on1Chat
-                      ? message.sender_id
-                      : undefined
-                  }
-                  currentUserId={
-                    is1on1Chat
-                      ? currentUser?.id
-                      : undefined
-                  }
-                  senderName={
-                    is1on1Chat &&
-                    message.sender_id !==
-                      currentUser?.id
-                      ? otherUserName
-                      : undefined
-                  }
-                />
-              )
-            )
-          )}
 
-          {isTyping && (
-            <TypingIndicator />
-          )}
-        </Box>
+            {/* Input */}
 
-        {/* Input */}
-
-        <Box
-          sx={{
-            padding: 2,
-            borderTop:
-              "1px solid #ddd",
-          }}
-        >
-          <ChatInput
-            onSend={sendMessage}
-            disabled={
-              !activeSessionId ||
-              !isConnected
-            }
-          />
-        </Box>
+            <Box
+              sx={{
+                padding: 2,
+                borderTop:
+                  "1px solid #ddd",
+              }}
+            >
+              <ChatInput
+                onSend={sendMessage}
+                disabled={
+                  !activeSessionId ||
+                  !isConnected
+                }
+              />
+            </Box>
+          </>
+        )}
       </Box>
     </Box>
   );
