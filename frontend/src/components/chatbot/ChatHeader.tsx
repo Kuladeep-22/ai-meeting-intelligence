@@ -1,20 +1,16 @@
 import {
   Box,
   Typography,
-  IconButton,
-  Tooltip,
 } from "@mui/material";
-
-import AddIcon from "@mui/icons-material/Add";
 
 interface ChatHeaderProps {
   title?: string;
-  onNewChat: () => void;
+  subtitle?: string;
 }
 
 const ChatHeader = ({
-  title = "Meeting Assistant",
-  onNewChat,
+  title = "Chats",
+  subtitle,
 }: ChatHeaderProps) => {
   return (
     <Box
@@ -31,22 +27,15 @@ const ChatHeader = ({
           {title}
         </Typography>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-        >
-          Ask questions about your meetings
-        </Typography>
+        {subtitle && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+          >
+            {subtitle}
+          </Typography>
+        )}
       </Box>
-
-      <Tooltip title="New Chat">
-        <IconButton
-          color="primary"
-          onClick={onNewChat}
-        >
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
     </Box>
   );
 };

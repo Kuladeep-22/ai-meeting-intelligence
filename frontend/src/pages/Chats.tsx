@@ -24,7 +24,6 @@ const Chat = () => {
 
     sendMessage,
     selectSession,
-    newChat,
     createChatWithUser,
   } = useChat();
 
@@ -93,9 +92,13 @@ const Chat = () => {
           title={
             is1on1Chat
               ? otherUserName || "Direct Message"
-              : "AI Meeting Assistant"
+              : "Select a user to start chatting"
           }
-          onNewChat={newChat}
+          subtitle={
+            is1on1Chat
+              ? undefined
+              : "Search for a user on the left to begin a conversation"
+          }
         />
 
         {/* Connection status */}
@@ -139,7 +142,7 @@ const Chat = () => {
               >
                 {is1on1Chat
                   ? `Start a conversation with ${otherUserName}`
-                  : "Ask me anything about your meetings."}
+                  : "Search for a user on the left to start chatting."}
               </Typography>
             </Box>
           ) : (

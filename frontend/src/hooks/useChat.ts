@@ -9,6 +9,7 @@ import {
   getChatSessions,
   createChatSession,
   ChatMessage,
+  ChatSession,
 } from "../api/chatApi";
 
 import { UserOption } from "../api/usersApi";
@@ -23,6 +24,16 @@ import {
   ChatWebSocket,
   WebSocketMessage,
 } from "../utils/websocket";
+
+// Only keep direct (user-to-user) chats; drop generic AI-assistant sessions
+const filterDirectSessions = (
+  sessions: ChatSession[]
+) =>
+  sessions.filter(
+    (session) =>
+      session.recipient_id !== undefined &&
+      session.recipient_id !== null
+  );
 
 export const useChat = () => {
   const {
@@ -49,7 +60,9 @@ export const useChat = () => {
     async () => {
       try {
         const data =
-          await getChatSessions();
+          filterDirectSessions(
+            await getChatSessions()
+          );
 
         setSessions(data);
 
@@ -202,38 +215,6 @@ export const useChat = () => {
     ]
   );
 
-  // Create new session
-  const newChat = useCallback(
-    async () => {
-      try {
-        const session =
-          await createChatSession();
-
-        const updatedSessions = await getChatSessions();
-
-        setSessions(updatedSessions);
-
-        clearMessages();
-
-        setActiveSession(
-          session.id
-        );
-
-      } catch (error) {
-        console.error(
-          "Failed to create chat",
-          error
-        );
-      }
-    },
-    [
-      sessions,
-      setSessions,
-      clearMessages,
-      setActiveSession,
-    ]
-  );
-
   // Create new session with a specific user
   const createChatWithUser =
     useCallback(
@@ -256,7 +237,10 @@ export const useChat = () => {
               session
             );
 
-            const updatedSessions = await getChatSessions();
+            const updatedSessions =
+              filterDirectSessions(
+                await getChatSessions()
+              );
 
           setSessions(updatedSessions);
 
@@ -363,7 +347,6 @@ export const useChat = () => {
 
     sendMessage,
     selectSession,
-    newChat,
     createChatWithUser,
   };
 };
