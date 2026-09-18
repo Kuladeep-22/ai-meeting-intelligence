@@ -77,6 +77,7 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           label="Meeting Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          autoComplete="off"
           required
         />
 
@@ -86,6 +87,7 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           onChange={(e) => setDescription(e.target.value)}
           multiline
           rows={3}
+          autoComplete="off"
         />
 
         <TextField
@@ -94,6 +96,7 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           value={meetingDate}
           onChange={(e) => setMeetingDate(e.target.value)}
           InputLabelProps={{ shrink: true }}
+          autoComplete="off"
           required
         />
 
@@ -103,6 +106,7 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
           InputLabelProps={{ shrink: true }}
+          autoComplete="off"
           required
         />
 
@@ -112,6 +116,7 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
           InputLabelProps={{ shrink: true }}
+          autoComplete="off"
           required
         />
 
@@ -120,6 +125,7 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="e.g. Conference Room A"
+          autoComplete="off"
         />
 
         <Button

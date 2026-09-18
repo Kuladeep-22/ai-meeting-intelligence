@@ -15,9 +15,17 @@ export class ChatWebSocket {
   private url: string;
 
   constructor(sessionId: number) {
+    const apiUrl =
+      import.meta.env.VITE_API_URL ||
+      "https://ai-meeting-api-z144.onrender.com/api/v1";
+
+    const defaultWsUrl = apiUrl
+      .replace(/^http/, "ws")
+      .replace(/\/api\/v1\/?$/, "");
+
     const wsUrl =
       import.meta.env.VITE_WS_URL ||
-      "ws://localhost:8000";
+      defaultWsUrl;
 
     const token = localStorage.getItem(
       "access_token"

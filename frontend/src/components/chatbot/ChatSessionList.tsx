@@ -40,7 +40,7 @@ const ChatSessionList = ({
           variant="subtitle1"
           sx={{ mb: 2 }}
         >
-          Chat History
+          Users
         </Typography>
 
         {onUserSelect && (
