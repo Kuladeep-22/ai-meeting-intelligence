@@ -204,31 +204,11 @@ export const useChat = () => {
 
   // Create new session
   const newChat = useCallback(
-    async () => {
-      try {
-        const session =
-          await createChatSession();
-
-        const updatedSessions = await getChatSessions();
-
-        setSessions(updatedSessions);
-
-        clearMessages();
-
-        setActiveSession(
-          session.id
-        );
-
-      } catch (error) {
-        console.error(
-          "Failed to create chat",
-          error
-        );
-      }
+    () => {
+      clearMessages();
+      setActiveSession(null);
     },
     [
-      sessions,
-      setSessions,
       clearMessages,
       setActiveSession,
     ]

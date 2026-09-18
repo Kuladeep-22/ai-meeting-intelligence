@@ -93,7 +93,7 @@ const Chat = () => {
           title={
             is1on1Chat
               ? otherUserName || "Direct Message"
-              : "AI Meeting Assistant"
+              : "Chats"
           }
           onNewChat={newChat}
         />
@@ -139,7 +139,7 @@ const Chat = () => {
               >
                 {is1on1Chat
                   ? `Start a conversation with ${otherUserName}`
-                  : "Ask me anything about your meetings."}
+                  : "Select a user to start a chat."}
               </Typography>
             </Box>
           ) : (

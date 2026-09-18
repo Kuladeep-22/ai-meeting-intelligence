@@ -15,7 +15,6 @@ import WarningIcon from "@mui/icons-material/Warning";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ChatIcon from "@mui/icons-material/Chat";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
 
 import { Link } from "react-router-dom";
 
@@ -35,7 +34,6 @@ const Sidebar = ({ open, onClose }: Props) => {
     { name: "Risks", icon: <WarningIcon />, path: "/risks" },
     { name: "Analytics", icon: <AnalyticsIcon />, path: "/analytics" },
     { name: "Teams", icon: <GroupsIcon />, path: "/teams" },
-    { name: "AI Assistant", icon: <SmartToyIcon />, path: "/assistant" },
     { name: "Settings", icon: <SettingsIcon />, path: "/settings" },
   ];
 

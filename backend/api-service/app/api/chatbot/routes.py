@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -72,20 +72,7 @@ def get_sessions(
 
     for session in sessions:
 
-        # ============================================== # AI chat # ==============================================
-
         if session.recipient_id is None:
-
-            response.append(
-                {
-                    "id": session.id,
-                    "title": session.title,
-                    "recipient_id": None,
-                    "created_at": session.created_at.isoformat() if session.created_at else "",
-                    "updated_at": session.updated_at.isoformat() if session.updated_at else "",
-                }
-            )
-
             continue
 
         # ============================================== # Direct user-to-user chat # ==============================================
@@ -124,6 +111,12 @@ def create_session(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if data.recipient_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="recipient_id is required for direct chats",
+        )
+
     session = ChatService.create_session(
         db=db,
         user_id=current_user.id,
@@ -145,14 +138,12 @@ def get_session_messages(
     )
 
     if session is None:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Chat session not found")
 
     #Only participants can access messages
     if (
         session.user_id != current_user.id and session.recipient_id != current_user.id
     ):
-        from fastapi import HTTPException
         raise HTTPException(status_code=403, detail="You are not a participant in this chat")
 
     messages = ChatService.get_messages(

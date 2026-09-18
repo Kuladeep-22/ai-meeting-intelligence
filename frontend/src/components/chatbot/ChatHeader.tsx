@@ -13,7 +13,7 @@ interface ChatHeaderProps {
 }
 
 const ChatHeader = ({
-  title = "Meeting Assistant",
+  title = "Chats",
   onNewChat,
 }: ChatHeaderProps) => {
   return (
@@ -35,7 +35,7 @@ const ChatHeader = ({
           variant="body2"
           color="text.secondary"
         >
-          Ask questions about your meetings
+          Select a user to start chatting
         </Typography>
       </Box>
 

@@ -11,7 +11,6 @@ import Analytics from "../pages/Analytics";
 import TeamManagement from "../pages/TeamManagement";
 import Settings from "../pages/Settings";
 import Chats from "../pages/Chats";
-import AiAssistant from "../pages/AiAssistant";
 
 import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
@@ -231,22 +230,6 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <MainLayout>
               <Settings />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ======================================================
-          AI ASSISTANT
-      ======================================================= */}
-
-      <Route
-        path="/assistant"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <AiAssistant />
             </MainLayout>
           </ProtectedRoute>
         }

@@ -184,6 +184,16 @@ async def chat_socket(
             await websocket.close()
             return
 
+        if session.recipient_id is None:
+            await websocket.send_json(
+                {
+                    "type": "error",
+                    "message": "AI assistant chat is disabled for this session",
+                }
+            )
+            await websocket.close()
+            return
+
         # ==================================================
         # Register WebSocket connection
         # ==================================================
@@ -233,93 +243,42 @@ async def chat_socket(
             if not message:
                 continue
 
-            # ==================================================
-            # USER-TO-USER CHAT
-            # ==================================================
-
-            if session.recipient_id is not None:
-
-                user_message = (
-                    ChatService.save_user_message(
-                        db=db,
-                        session_id=session_id,
-                        content=message,
-                        sender_id=user_id,
-                    )
-                )
-
-                message_data = {
-                    "type": "message",
-                    "session_id": session_id,
-                    "message_id": user_message.id,
-                    "content": user_message.content,
-                    "role": "user",
-                    "sender_id": user_id,
-                    "created_at": (
-                        user_message.created_at.isoformat()
-                        if user_message.created_at
-                        else None
-                    ),
-                }
-
-                # ==================================================
-                # Send message to BOTH users
-                # ==================================================
-
-                await manager.broadcast(
-                    session_id=session_id,
-                    message=message_data,
-                )
-
-                print(
-                    f"User {user_id} sent message "
-                    f"in session {session_id}"
-                )
-
-            # ==================================================
-            # AI CHAT
-            # ==================================================
-
-            else:
-
-                await websocket.send_json(
-                    {
-                        "type": "typing",
-                        "content": True,
-                    }
-                )
-
-                (
-                    user_message,
-                    assistant_message,
-                ) = await ChatService.process_message(
+            user_message = (
+                ChatService.save_user_message(
                     db=db,
                     session_id=session_id,
-                    message=message,
+                    content=message,
+                    sender_id=user_id,
                 )
+            )
 
-                # Send AI response
-                await websocket.send_json(
-                    {
-                        "type": "assistant_message",
-                        "session_id": session_id,
-                        "message_id": assistant_message.id,
-                        "content": assistant_message.content,
-                        "role": "assistant",
-                        "created_at": (
-                            assistant_message.created_at.isoformat()
-                            if assistant_message.created_at
-                            else None
-                        ),
-                    }
-                )
+            message_data = {
+                "type": "message",
+                "session_id": session_id,
+                "message_id": user_message.id,
+                "content": user_message.content,
+                "role": "user",
+                "sender_id": user_id,
+                "created_at": (
+                    user_message.created_at.isoformat()
+                    if user_message.created_at
+                    else None
+                ),
+            }
 
-                await websocket.send_json(
-                    {
-                        "type": "typing",
-                        "content": False,
-                    }
-                )
+            # ==================================================
+            # Send message to BOTH users
+            # ==================================================
+
+            await manager.broadcast(
+                session_id=session_id,
+                message=message_data,
+            )
+
+            print(
+                f"User {user_id} sent message "
+                f"in session {session_id}"
+            )
 
     except WebSocketDisconnect:
 
