@@ -50,7 +50,6 @@ export interface Meeting {
 }
 
 export interface CreateMeetingData {
-  id : number;
   title: string;
   description?: string;
   meeting_date?: string;

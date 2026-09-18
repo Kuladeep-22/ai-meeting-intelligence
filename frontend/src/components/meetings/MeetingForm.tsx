@@ -8,10 +8,11 @@ import {
 import {
   createMeeting,
   CreateMeetingData,
+  Meeting,
 } from "../../api/meetingApi";
 
 interface MeetingFormProps {
-  onCreated?: (meeting: any) => void;
+  onCreated?: (meeting: Meeting) => void;
 }
 
 const MeetingForm = ({ onCreated }: MeetingFormProps) => {
