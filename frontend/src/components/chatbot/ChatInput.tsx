@@ -52,7 +52,7 @@ const ChatInput = ({
         fullWidth
         multiline
         maxRows={4}
-        placeholder="Ask about your meetings..."
+        placeholder="Type a message..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}

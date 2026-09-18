@@ -101,10 +101,10 @@ const UserSearch = ({ onUserSelect }: UserSearchProps) => {
     const filtered = users
       .filter(
         (user) =>
-          user.full_name
+          (user.full_name || "")
             .toLowerCase()
             .includes(query) ||
-          user.email
+          (user.email || "")
             .toLowerCase()
             .includes(query)
       )

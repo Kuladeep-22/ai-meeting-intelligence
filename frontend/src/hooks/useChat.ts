@@ -258,6 +258,8 @@ export const useChat = () => {
             "Failed to create/open chat with user",
             error
           );
+
+          throw error;
         }
       },
       [
@@ -310,11 +312,18 @@ export const useChat = () => {
     ]
   );
 
-  // Load sessions initially
+  // Load sessions initially, then keep polling so incoming
+  // chats from other users show up without a manual refresh
   useEffect(() => {
     loadSessions();
 
+    const pollId = setInterval(() => {
+      loadSessions();
+    }, 5000);
+
     return () => {
+      clearInterval(pollId);
+
       if (websocketRef.current) {
         websocketRef.current.close();
       }

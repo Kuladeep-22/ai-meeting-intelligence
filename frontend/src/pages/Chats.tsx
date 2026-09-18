@@ -1,7 +1,10 @@
+import { useState } from "react";
+
 import {
   Box,
   Typography,
   Chip,
+  Alert,
 } from "@mui/material";
 
 import ChatHeader from "../components/chatbot/ChatHeader";
@@ -31,10 +34,21 @@ const Chat = () => {
     (state) => state.user
   );
 
+  const [chatError, setChatError] = useState<
+    string | null
+  >(null);
+
   const handleUserSelect = async (
     user: UserOption
   ) => {
-    await createChatWithUser(user);
+    try {
+      setChatError(null);
+      await createChatWithUser(user);
+    } catch {
+      setChatError(
+        `Couldn't start a chat with ${user.full_name}. Please try again.`
+      );
+    }
   };
 
   // Get current session
@@ -83,6 +97,16 @@ const Chat = () => {
           flexDirection: "column",
         }}
       >
+        {chatError && (
+          <Alert
+            severity="error"
+            sx={{ margin: 2 }}
+            onClose={() => setChatError(null)}
+          >
+            {chatError}
+          </Alert>
+        )}
+
         {!currentSession ? (
           <Box
             sx={{
