@@ -50,10 +50,17 @@ export interface Meeting {
 }
 
 export interface CreateMeetingData {
+  id : number;
   title: string;
   description?: string;
+  meeting_date?: string;
   start_time: string;
   end_time: string;
+  location?: string;
+  organizer_id?: number;
+  meeting_code?: string;
+  join_url?: string;
+  status?: string;
 }
 
 export type RSVPStatus =
