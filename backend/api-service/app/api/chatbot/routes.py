@@ -70,48 +70,54 @@ def get_sessions(
 
     response = []
 
-    # ============================================== # AI chat # ==============================================
-    
-    if session.recipient_id is None:
-        
+    for session in sessions:
+
+        # ============================================== # AI chat # ==============================================
+
+        if session.recipient_id is None:
+
+            response.append(
+                {
+                    "id": session.id,
+                    "title": session.title,
+                    "recipient_id": None,
+                    "created_at": session.created_at.isoformat() if session.created_at else "",
+                    "updated_at": session.updated_at.isoformat() if session.updated_at else "",
+                }
+            )
+
+            continue
+
+        # ============================================== # Direct user-to-user chat # ==============================================
+
+        if session.user_id == current_user.id:
+            other_user_id = session.recipient_id
+        else:
+            other_user_id = session.user_id
+
+        other_user = db.query(User).filter(User.id == other_user_id).first()
+
+        if other_user:
+            title = (
+                f"Chat with "
+                f"{other_user.full_name}"
+            )
+        else:
+            title = "Direct Message"
+
         response.append(
             {
                 "id": session.id,
-                "title": session.title,
-                "recipient_id": None,
+                "title": title,
+                "recipient_id": session.recipient_id,
                 "created_at": session.created_at.isoformat() if session.created_at else "",
                 "updated_at": session.updated_at.isoformat() if session.updated_at else "",
             }
         )
 
-
-    # ============================================== # Direct user-to-user chat # ==============================================
-
-    if session.user_id == current_user.id:
-        other_user_id = session.recipient_id
-    else:
-        other_user_id = session.user_id
-
-    other_user = db.query(User).filter(User.id == other_user_id).first()
-
-    if other_user:
-
-        title =(f"Chat with "
-                f"{other_user.full_name}"
-        )
-    else:
-        title = "Direct Message"
-
-    response.append(
-        {
-            "id": session.id,
-            "title": title,
-            "recipient_id": session.recipient_id,
-            "created_at": session.created_at.isoformat() if session.created_at else "",
-            "updated_at": session.updated_at.isoformat() if session.updated_at else "",
-        }
-    )
     return response
+
+
 @router.post("/sessions", response_model=ChatSessionResponse)
 def create_session(
     data: ChatSessionCreate,

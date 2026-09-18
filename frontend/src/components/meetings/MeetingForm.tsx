@@ -122,29 +122,6 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           placeholder="e.g. Conference Room A"
         />
 
-        <TextField
-          label="Organizer ID"
-          type="number"
-          value={organizerId}
-          onChange={(e) => setOrganizerId(e.target.value)}
-          placeholder="Enter organizer ID"
-        />
-
-        <TextField
-          label="Meeting Code"
-          value={meetingCode}
-          onChange={(e) => setMeetingCode(e.target.value)}
-          placeholder="e.g. ABC-123"
-        />
-
-        <TextField
-          label="Join URL"
-          type="url"
-          value={joinUrl}
-          onChange={(e) => setJoinUrl(e.target.value)}
-          placeholder="https://..."
-        />
-
         <Button
           type="submit"
           variant="contained"
