@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 from sqlalchemy.orm import Session
@@ -410,25 +412,42 @@ def ask_chatbot(
         print(combined_context)
 
         # ----------------------------------------------------
-        # Call AI service
+        # Call AI service (retry on transient rate limits)
         # ----------------------------------------------------
 
-        response = requests.post(
-            AI_SERVICE_URL,
-            json={
-                "question": question,
-                "context": combined_context,
-            },
-            timeout=120,
-        )
+        max_attempts = 3
+        response = None
 
-        print("")
-        print("============================================================")
-        print("AI SERVICE RESPONSE")
-        print("============================================================")
-        print("STATUS:", response.status_code)
-        print("BODY:", response.text)
-        print("============================================================")
+        for attempt in range(max_attempts):
+
+            response = requests.post(
+                AI_SERVICE_URL,
+                json={
+                    "question": question,
+                    "context": combined_context,
+                },
+                timeout=120,
+            )
+
+            print("")
+            print("============================================================")
+            print("AI SERVICE RESPONSE")
+            print("============================================================")
+            print("STATUS:", response.status_code)
+            print("BODY:", response.text)
+            print("============================================================")
+
+            if response.status_code != 429:
+                break
+
+            if attempt < max_attempts - 1:
+                time.sleep(2 * (attempt + 1))
+
+        if response.status_code == 429:
+            return (
+                "The AI assistant is receiving too many requests "
+                "right now. Please wait a few seconds and try again."
+            )
 
         response.raise_for_status()
 
@@ -448,7 +467,10 @@ def ask_chatbot(
         print(type(e).__name__, str(e))
         print("============================================================")
 
-        return f"AI Service Error: {str(e)}"
+        return (
+            "Sorry, the AI assistant is unavailable right now. "
+            "Please try again shortly."
+        )
 
     except Exception as e:
 

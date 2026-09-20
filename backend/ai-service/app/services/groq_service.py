@@ -1,7 +1,8 @@
 import os
+import time
 
 from dotenv import load_dotenv
-from groq import Groq
+from groq import Groq, RateLimitError
 
 
 load_dotenv()
@@ -80,28 +81,41 @@ USER QUESTION:
 {question}
 """
 
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a reliable AI Meeting Intelligence "
-                    "Assistant. Never invent database facts."
-                )
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.2,
-        max_completion_tokens=2048,
-    )
+    max_attempts = 3
 
-    return (
-        response
-        .choices[0]
-        .message
-        .content
-    )
+    for attempt in range(max_attempts):
+
+        try:
+
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a reliable AI Meeting Intelligence "
+                            "Assistant. Never invent database facts."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.2,
+                max_completion_tokens=2048,
+            )
+
+            return (
+                response
+                .choices[0]
+                .message
+                .content
+            )
+
+        except RateLimitError:
+
+            if attempt == max_attempts - 1:
+                raise
+
+            time.sleep(2 * (attempt + 1))
