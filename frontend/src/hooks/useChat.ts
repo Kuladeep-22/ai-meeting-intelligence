@@ -18,8 +18,6 @@ import {
   useChatStore,
 } from "../store/chatStore";
 
-import { useAuthStore } from "../store/authStore";
-
 import {
   ChatWebSocket,
   WebSocketMessage,
@@ -272,9 +270,6 @@ export const useChat = () => {
   // Send message
   const sendMessage = useCallback(
     (message: string) => {
-      const currentUser =
-        useAuthStore.getState().user;
-
       if (
         !activeSessionId ||
         !websocketRef.current
@@ -286,29 +281,16 @@ export const useChat = () => {
         return;
       }
 
-      const userMessage: ChatMessage = {
-        session_id:
-          activeSessionId,
-        sender_id:
-          currentUser?.id,
-        role: "user",
-        content: message,
-      };
-
-      // Immediately display user message
-      addMessage(userMessage);
-
-      setTyping(true);
-
-      // Send through WebSocket
+      // Don't add the message locally here: the server broadcasts
+      // every message (including back to the sender) over the same
+      // websocket, so adding it optimistically as well as on receipt
+      // caused every sent message to show up twice.
       websocketRef.current.send(
         message
       );
     },
     [
       activeSessionId,
-      addMessage,
-      setTyping,
     ]
   );
 
