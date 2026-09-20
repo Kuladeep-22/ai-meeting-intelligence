@@ -15,17 +15,17 @@ export class ChatWebSocket {
   private url: string;
 
   constructor(sessionId: number) {
+    // Always derive the socket host from the REST API host rather
+    // than a separate VITE_WS_URL env var: the two must point at the
+    // same backend, and a stale/misconfigured VITE_WS_URL has broken
+    // chat delivery before.
     const apiUrl =
       import.meta.env.VITE_API_URL ||
       "https://ai-meeting-api-z144.onrender.com/api/v1";
 
-    const defaultWsUrl = apiUrl
+    const wsUrl = apiUrl
       .replace(/^http/, "ws")
       .replace(/\/api\/v1\/?$/, "");
-
-    const wsUrl =
-      import.meta.env.VITE_WS_URL ||
-      defaultWsUrl;
 
     const token = localStorage.getItem(
       "access_token"
