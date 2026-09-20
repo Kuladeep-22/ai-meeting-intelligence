@@ -226,7 +226,7 @@ export const useChat = () => {
 
           const session =
             await createChatSession(
-              `Chat with ${user.full_name}`,
+              `${user.full_name}`,
               user.id
             );
 
