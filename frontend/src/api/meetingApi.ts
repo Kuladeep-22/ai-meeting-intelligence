@@ -1,22 +1,4 @@
-import axios from "axios";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:8000/api/v1";
-
-const api = axios.create({
-  baseURL: API_URL,
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
+import api from "./axios";
 
 // ==================================================
 // TYPES
@@ -26,6 +8,8 @@ export interface Participant {
   id: number;
   user_id: number;
   status: string;
+  full_name?: string;
+  email?: string;
 }
 
 export interface Meeting {
@@ -33,17 +17,14 @@ export interface Meeting {
   title: string;
   description?: string;
 
-  meeting_date?: string;
+  meeting_date: string;
 
   start_time?: string;
   end_time?: string;
 
-  status?: string;
+  organizer: string;
+  location?: string;
 
-  organizer_id?: number;
-  organizer?: string;
-
-  meeting_code?: string;
   join_url?: string;
 
   participants?: Participant[];
@@ -52,14 +33,12 @@ export interface Meeting {
 export interface CreateMeetingData {
   title: string;
   description?: string;
-  meeting_date?: string;
-  start_time: string;
-  end_time: string;
+  meeting_date: string;
+  start_time?: string;
+  end_time?: string;
+  organizer: string;
   location?: string;
-  organizer_id?: number;
-  meeting_code?: string;
-  join_url?: string;
-  status?: string;
+  participant_ids?: number[];
 }
 
 export type RSVPStatus =

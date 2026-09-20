@@ -9,6 +9,7 @@ class MeetingCreate(BaseModel):
     start_time: Optional[str] = None
     end_time: Optional[str] = None
     organizer: str
+    location: Optional[str] = None
     participant_ids: Optional[List[int]] = []
 
 
@@ -19,6 +20,7 @@ class MeetingUpdate(BaseModel):
     start_time: Optional[str] = None
     end_time: Optional[str] = None
     organizer: Optional[str] = None
+    location: Optional[str] = None
     participant_ids: Optional[List[int]] = None
 
 
@@ -46,6 +48,7 @@ class MeetingResponse(BaseModel):
     start_time: Optional[str] = None
     end_time: Optional[str] = None
     organizer: str
+    location: Optional[str] = None
     join_url: Optional[str] = None
     participants: List[ParticipantResponse] = []
 

@@ -49,12 +49,8 @@ const useMeetingRoom = (meetingId: number) => {
 
       const roomData: MeetingRoom = {
         meeting_id: meeting.id,
-        meeting_code: meeting.meeting_code,
         title: meeting.title,
-        status:
-          (meeting.status as MeetingRoom["status"]) ||
-          "scheduled",
-        organizer_id: meeting.organizer_id,
+        status: "scheduled",
         participants,
       };
 

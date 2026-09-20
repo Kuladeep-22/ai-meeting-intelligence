@@ -43,7 +43,7 @@ const Meetings = () => {
             date={meeting.start_time || new Date().toISOString().split('T')[0]}
             startTime={meeting.start_time}
             endTime={meeting.end_time}
-            organizer={`Organizer #${meeting.organizer_id || 'Unknown'}`}
+            organizer={meeting.organizer || "Unknown"}
             onView={() => navigate(`/meetings/${meeting.id}`)}
             onDelete={() => setMeetingToDelete(meeting.id)}
           />

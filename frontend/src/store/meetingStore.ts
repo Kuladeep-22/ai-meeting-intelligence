@@ -1,15 +1,6 @@
 import { create } from "zustand";
 
-interface Meeting {
-  id: number;
-  title: string;
-  description?: string;
-  start_time?: string;
-  end_time?: string;
-  status?: string;
-  organizer_id?: number;
-  meeting_code?: string;
-}
+import { Meeting } from "../api/meetingApi";
 
 interface MeetingStore {
   meetings: Meeting[];

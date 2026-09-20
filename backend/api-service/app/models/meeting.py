@@ -19,4 +19,6 @@ class Meeting(Base):
 
     organizer = Column(String(100))
 
+    location = Column(String(255))
+
     join_url = Column(String(255))

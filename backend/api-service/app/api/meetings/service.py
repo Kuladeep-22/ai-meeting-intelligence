@@ -90,6 +90,7 @@ def create_meeting(db, data):
         start_time=data.start_time,
         end_time=data.end_time,
         organizer=data.organizer,
+        location=data.location,
         join_url=f"/meet/{uuid4().hex}",
     )
 
@@ -158,6 +159,9 @@ def update_meeting(db, meeting_id, data):
 
     if data.organizer:
         meeting.organizer = data.organizer
+
+    if data.location:
+        meeting.location = data.location
 
     db.commit()
 

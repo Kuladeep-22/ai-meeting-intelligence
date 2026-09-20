@@ -332,7 +332,10 @@ const MeetingDetails = () => {
                       disableGutters
                     >
                       <ListItemText
-                        primary={`User #${participant.user_id}`}
+                        primary={
+                          participant.full_name ||
+                          `User #${participant.user_id}`
+                        }
                         secondary={
                           participant.status
                         }
