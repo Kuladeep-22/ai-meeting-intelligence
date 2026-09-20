@@ -139,25 +139,29 @@ const MeetingForm = ({ onCreated }: MeetingFormProps) => {
           required
         />
 
-        <TextField
-          label="Start Time"
-          type="datetime-local"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          autoComplete="off"
-          required
-        />
+        <Stack direction="row" spacing={2}>
+          <TextField
+            label="Start Time"
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            autoComplete="off"
+            fullWidth
+            required
+          />
 
-        <TextField
-          label="End Time"
-          type="datetime-local"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          autoComplete="off"
-          required
-        />
+          <TextField
+            label="End Time"
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            autoComplete="off"
+            fullWidth
+            required
+          />
+        </Stack>
 
         <TextField
           label="Location"
