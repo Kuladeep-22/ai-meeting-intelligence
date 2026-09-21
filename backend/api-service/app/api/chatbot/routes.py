@@ -99,7 +99,6 @@ def get_sessions(
 
         if other_user:
             title = (
-                f"Chat with "
                 f"{other_user.full_name}"
             )
         else:
