@@ -56,19 +56,8 @@ const Chat = () => {
     (s) => s.id === activeSessionId
   );
 
-  // Extract other user's name from title for 1-on-1 chats
-  // Title format: "Chat with [User Name]"
-  const getOtherUserName = () => {
-    if (!currentSession) return "";
-
-    const match = currentSession.title.match(
-      /^Chat with (.+)$/
-    );
-
-    return match ? match[1] : "";
-  };
-
-  const otherUserName = getOtherUserName();
+  const otherUserName =
+    currentSession?.recipient_name || "";
 
   return (
     <Box

@@ -4,6 +4,7 @@ export interface ChatSession {
   id: number;
   title: string;
   recipient_id?: number | null;
+  recipient_name?: string | null;
   created_at: string;
   updated_at: string;
 }

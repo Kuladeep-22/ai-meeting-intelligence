@@ -97,18 +97,14 @@ def get_sessions(
 
         other_user = db.query(User).filter(User.id == other_user_id).first()
 
-        if other_user:
-            title = (
-                f"{other_user.full_name}"
-            )
-        else:
-            title = "Direct Message"
+        recipient_name = other_user.full_name if other_user else None
 
         response.append(
             {
                 "id": session.id,
-                "title": title,
+                "title": recipient_name or "Direct Message",
                 "recipient_id": session.recipient_id,
+                "recipient_name": recipient_name,
                 "created_at": session.created_at.isoformat() if session.created_at else "",
                 "updated_at": session.updated_at.isoformat() if session.updated_at else "",
             }
